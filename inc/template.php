@@ -41,7 +41,7 @@
 			$img_type = pathinfo($logo, PATHINFO_EXTENSION);
 			$img_data = file_get_contents($logo);
 			$base64 = 'data:image/'.$img_type.';base64,'.base64_encode($img_data);
-			echo "<img src = '".$base64."' style='display: block; width: 100%; height: 20mm;'>";
+			echo "<center><img src = '".$base64."' style='display: block; height: 25mm;'></center>";
 
 			// echo '<img src="';
 			// echo $logo;
