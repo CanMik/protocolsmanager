@@ -514,7 +514,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$html2pdf->setPaper('A4', $orientation);
 				$html2pdf->render();
 
-				$doc_name = $prot_num."-".date('mdY').'.pdf';
+				$doc_name = str_replace(' ', '_', $title)."-".date('dmY').'.pdf';
 				$output = $html2pdf->output();
 
 				file_put_contents(GLPI_UPLOAD_DIR .'/'.$doc_name, $output);
