@@ -10,14 +10,18 @@ function plugin_protocolsmanager_install(): bool
     $migration = new Migration($version['version']);
 
     // Helper: create table if not exists
+    // MODIFICATION : Le 3ème paramètre $inserts est conservé, mais il attend maintenant
+    // un tableau de tableaux de données (pour DB::insert) au lieu de chaînes SQL.
     $createTable = function (string $name, string $schema, array $inserts = []) use ($DB) {
         if (!$DB->tableExists($name)) {
             if (!$DB->query($schema)) {
                 Toolbox::logInFile('php-errors', "Error creating table $name: " . $DB->error() . "\n");
                 return;
             }
-            foreach ($inserts as $insert) {
-                if (!$DB->query($insert)) {
+            // MODIFICATION : On utilise DB::insert() qui est sécurisé,
+            // $insertData est un tableau associatif [champ => valeur]
+            foreach ($inserts as $insertData) {
+                if (!$DB->insert($name, $insertData)) {
                     Toolbox::logInFile('php-errors', "Error inserting defaults for $name: " . $DB->error() . "\n");
                 }
             }
@@ -37,11 +41,14 @@ function plugin_protocolsmanager_install(): bool
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci",
         [
-            sprintf(
-                "INSERT INTO glpi_plugin_protocolsmanager_profiles (profile_id, plugin_conf, tab_access, make_access, delete_access)
-                 VALUES (%d, 'w', 'w', 'w', 'w')",
-                $_SESSION['glpiactiveprofile']['id'] ?? 0
-            )
+            // MODIFICATION : Remplacé le sprintf par un tableau de données
+            [
+                'profile_id'    => (int)($_SESSION['glpiactiveprofile']['id'] ?? 0),
+                'plugin_conf'   => 'w',
+                'tab_access'    => 'w',
+                'make_access'   => 'w',
+                'delete_access' => 'w'
+            ]
         ]
     );
 
@@ -73,38 +80,38 @@ function plugin_protocolsmanager_install(): bool
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci",
         [
-            "INSERT INTO glpi_plugin_protocolsmanager_config
-                (name, title, font, fontsize, content, footer, city, serial_mode, orientation, breakword, email_mode, author_name, author_state)
-             VALUES
-                ('Equipment report',
-                 'Certificate of delivery of {owner}',
-                 'Roboto',
-                 '9',
-                 'User: \\n I have read the terms of use of IT equipment in the Example Company.',
-                 'Example Company \\n Example Street 21 \\n 01-234 Example City',
-                 'Example city',
-                 1,
-                 'Portrait',
-                 1,
-                 2,
-                 'Test Division',
-                 1)",
-            "INSERT INTO glpi_plugin_protocolsmanager_config
-                (name, title, font, fontsize, content, footer, city, serial_mode, orientation, breakword, email_mode, author_name, author_state)
-             VALUES
-                ('Equipment report 2',
-                 'Certificate of delivery of {owner}',
-                 'Roboto',
-                 '9',
-                 'User: \\n I have read the terms of use of IT equipment in the Example Company.',
-                 'Example Company \\n Example Street 21 \\n 01-234 Example City',
-                 'Example city',
-                 1,
-                 'Portrait',
-                 1,
-                 2,
-                 'Test Division',
-                 1)"
+            // MODIFICATION : Remplacé la chaîne "INSERT INTO..." par un tableau de données
+            [
+                'name' => 'Equipment report',
+                'title' => 'Certificate of delivery of {owner}',
+                'font' => 'Roboto',
+                'fontsize' => '9',
+                'content' => 'User: \n I have read the terms of use of IT equipment in the Example Company.',
+                'footer' => 'Example Company \n Example Street 21 \n 01-234 Example City',
+                'city' => 'Example city',
+                'serial_mode' => 1,
+                'orientation' => 'Portrait',
+                'breakword' => 1,
+                'email_mode' => 2,
+                'author_name' => 'Test Division',
+                'author_state' => 1
+            ],
+            // MODIFICATION : Remplacé la chaîne "INSERT INTO..." par un tableau de données
+            [
+                'name' => 'Equipment report 2',
+                'title' => 'Certificate of delivery of {owner}',
+                'font' => 'Roboto',
+                'fontsize' => '9',
+                'content' => 'User: \n I have read the terms of use of IT equipment in the Example Company.',
+                'footer' => 'Example Company \n Example Street 21 \n 01-234 Example City',
+                'city' => 'Example city',
+                'serial_mode' => 1,
+                'orientation' => 'Portrait',
+                'breakword' => 1,
+                'email_mode' => 2,
+                'author_name' => 'Test Division',
+                'author_state' => 1
+            ]
         ]
     );
 
@@ -122,10 +129,14 @@ function plugin_protocolsmanager_install(): bool
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci",
         [
-            "INSERT INTO glpi_plugin_protocolsmanager_emailconfig
-                (tname, send_user, email_content, email_subject, recipients)
-             VALUES
-                ('Email default', 2, 'Testmail', 'Testmail', 'Testmail')"
+            // MODIFICATION : Remplacé la chaîne "INSERT INTO..." par un tableau de données
+            [
+                'tname' => 'Email default',
+                'send_user' => 2,
+                'email_content' => 'Testmail',
+                'email_subject' => 'Testmail',
+                'recipients' => 'Testmail'
+            ]
         ]
     );
 
@@ -142,9 +153,11 @@ function plugin_protocolsmanager_install(): bool
             document_type VARCHAR(255),
             PRIMARY KEY (id)
         ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci"
+        // Pas d'inserts ici, c'est correct
     );
 
     // Update config table fields if upgrading from older versions
+    // Ces requêtes ALTER TABLE sont correctes, elles n'ont pas besoin de changer.
     $fieldsToAdd = [
         'author_name' => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD author_name VARCHAR(255) AFTER email_template",
         'author_state' => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD author_state INT(2) AFTER author_name",
@@ -177,6 +190,7 @@ function plugin_protocolsmanager_uninstall(): bool
         'glpi_plugin_protocolsmanager_emailconfig'
     ];
 
+    // C'est correct, DROP TABLE est une requête DDL.
     foreach ($tables as $table) {
         $DB->query("DROP TABLE IF EXISTS `$table`");
     }

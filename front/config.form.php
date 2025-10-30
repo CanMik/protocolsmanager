@@ -1,7 +1,5 @@
 <?php
 	
-	include ('../../../inc/includes.php');
-	
 	Session::haveRight("config", UPDATE);
 	
 	Html::header(PluginProtocolsmanagerConfig::getTypeName(2), '', "config", "PluginProtocolsmanagerMenu");

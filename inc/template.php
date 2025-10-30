@@ -68,7 +68,7 @@
 
 <table>
     <tr>
-        <td><?= $upper_content ?></td>
+        <td><?= nl2br(htmlspecialchars($upper_content)) // Sécurisé + nl2br pour les sauts de ligne ?></td>
     </tr>
 </table>
 
@@ -100,36 +100,36 @@ if (!empty($number)) {
         echo '<tr><td>' . $lp++ . '</td>';
 
         // Type
-        echo '<td>' . ($type_name[$key] ?? '') . '</td>';
+        echo '<td>' . htmlspecialchars($type_name[$key] ?? '') . '</td>';
 
         // Manufacturer and Model
         if (!empty($man_name[$key])) {
-            echo '<td>' . $man_name[$key] . '</td>';
-            echo '<td>' . ($mod_name[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($man_name[$key]) . '</td>';
+            echo '<td>' . htmlspecialchars($mod_name[$key] ?? '') . '</td>';
         } else {
             echo '<td></td>';
-            echo '<td>' . ($mod_name[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($mod_name[$key] ?? '') . '</td>';
         }
 
         // Name
-        echo '<td>' . ($item_name[$key] ?? '') . '</td>';
+        echo '<td>' . htmlspecialchars($item_name[$key] ?? '') . '</td>';
 
         // Serial / Inventory
         if ($serial_mode == 1) {
-            echo '<td>' . ($serial[$key] ?? '') . '</td>';
-            echo '<td>' . ($otherserial[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($serial[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($otherserial[$key] ?? '') . '</td>';
         } else {
             // serial_mode == 2
             $serial_value = $serial[$key] ?? '';
             if (empty($serial_value)) {
                 $serial_value = $otherserial[$key] ?? '';
             }
-            echo '<td>' . $serial_value . '</td>';
+            echo '<td>' . htmlspecialchars($serial_value) . '</td>';
         }
 
         // Comments if any
         if (!empty(array_filter($comments))) {
-            echo '<td>' . ($comments[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($comments[$key] ?? '') . '</td>';
         }
 
         echo '</tr>';
@@ -146,7 +146,7 @@ if (!empty($number)) {
 </table>
 
 <table>
-    <tr><td><?= $content ?></td></tr>
+    <tr><td><?= nl2br(htmlspecialchars($content)) // Sécurisé + nl2br pour les sauts de ligne ?></td></tr>
 </table>
 
 <table>
@@ -160,15 +160,15 @@ if (!empty($number)) {
     </tr>
     <tr>
         <td style="width:50%; border: 1px solid black; vertical-align: top; height: 20mm;">
-            <?= ($author_state == 2) ? $author_name : $author ?>
+            <?= ($author_state == 2) ? htmlspecialchars($author_name) : htmlspecialchars($author) ?>
         </td>
         <td style="width:50%; border: 1px solid black; vertical-align: top; height: 20mm;">
-            <?= $owner ?>
+            <?= htmlspecialchars($owner) ?>
         </td>
     </tr>
 </table>
 
-<footer><?= $footer ?></footer>
+<footer><?= nl2br(htmlspecialchars($footer)) // Sécurisé + nl2br pour les sauts de ligne ?></footer>
 
 </body>
 </html>
