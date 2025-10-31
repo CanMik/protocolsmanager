@@ -5,7 +5,7 @@ function plugin_version_protocolsmanager(): array
 {
     return [
         'name'         => __('Protocols manager', 'protocolsmanager'),
-        'version'      => '1.5.7.5',
+        'version'      => '1.6.0.0',
         'author'       => 'Mikail',
         'license'      => 'GPLv3+',
         'homepage'     => 'https://github.com/CanMik/protocolsmanager',
