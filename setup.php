@@ -5,7 +5,7 @@ function plugin_version_protocolsmanager(): array
 {
     return [
         'name'         => __('Protocols manager', 'protocolsmanager'),
-        'version'      => '1.5.7.5',
+        'version'      => '1.6.0.1',
         'author'       => 'Mikail',
         'license'      => 'GPLv3+',
         'homepage'     => 'https://github.com/CanMik/protocolsmanager',
@@ -45,7 +45,7 @@ function plugin_protocolsmanager_check_prerequisites(): bool
 // Init plugin hooks
 function plugin_init_protocolsmanager(): void
 {
-    global $PLUGIN_HOOKS;
+    global $PLUGIN_HOOKS, $DB;
 
     $PLUGIN_HOOKS['csrf_compliant']['protocolsmanager'] = true;
     $PLUGIN_HOOKS['add_css']['protocolsmanager']        = 'css/styles.css';
@@ -62,10 +62,14 @@ function plugin_init_protocolsmanager(): void
     Plugin::registerClass('PluginProtocolsmanagerProfile', ['addtabon' => ['Profile']]);
     Plugin::registerClass('PluginProtocolsmanagerConfig',  ['addtabon' => ['Config']]);
 
-    // Config page & menu need to relog to have access to menu
-    if (PluginProtocolsmanagerProfile::currentUserHasRight('plugin_conf')) {
-        $PLUGIN_HOOKS['menu_toadd']['protocolsmanager'] = ['config' => 'PluginProtocolsmanagerMenu'];
-        $PLUGIN_HOOKS['config_page']['protocolsmanager'] = 'front/config.form.php';
-    }
+    // --- SÉCURITÉ : ne pas appeler la table avant qu’elle n’existe ---
+    if ($DB->tableExists('glpi_plugin_protocolsmanager_profiles')) {
+        if (class_exists('PluginProtocolsmanagerProfile')
+            && method_exists('PluginProtocolsmanagerProfile', 'currentUserHasRight')
+            && PluginProtocolsmanagerProfile::currentUserHasRight('plugin_conf')) {
 
+            $PLUGIN_HOOKS['menu_toadd']['protocolsmanager']  = ['config' => 'PluginProtocolsmanagerMenu'];
+            $PLUGIN_HOOKS['config_page']['protocolsmanager'] = 'front/config.form.php';
+        }
+    }
 }
