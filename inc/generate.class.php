@@ -666,7 +666,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 
 				}
 		}
-		
+
 		static function getDocNumber() {
 			global $DB;
 			
@@ -745,14 +745,16 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$doc->delete(['id' => $del_key]); // Simplified delete
 			}
 		}
-		
+
 		//send mail notification
 		static function sendMail($doc_id, $send_user, $email_subject, $email_content, $recipients, $id) {
 			
 			global $CFG_GLPI, $DB;
 			$nmail = new GLPIMailer();
 			
-			$nmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
+			// FIX: Assurer que le nom de l'expéditeur n'est jamais null
+			$sender_name = $CFG_GLPI["admin_email_name"] ?? '';
+			$nmail->SetFrom($CFG_GLPI["admin_email"], $sender_name, false);
 			
 			$recipients_array = explode(';',$recipients);
 			
@@ -768,6 +770,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			}
 			
 			$fullpath = GLPI_VAR_DIR . '/' . $path;
+			$owner_email = null; // Initialisation
 			
 			// Updated DB->request syntax
 			$req2 = $DB->request([
@@ -779,13 +782,16 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$owner_email = $row2["email"];
 			}
 			
-			if ($send_user == 1) {
-				$nmail->AddAddress($owner_email);
+			if ($send_user == 1 && !empty($owner_email)) {
+				// FIX: Ajout de '' comme deuxième argument
+				$nmail->AddAddress($owner_email, '');
 			}
 			
 			foreach($recipients_array as $recipient) {
-				
-				$nmail->AddAddress($recipient); //do konfiguracji
+				if (!empty($recipient)) {
+					// FIX: Ajout de '' comme deuxième argument
+					$nmail->AddAddress($recipient, ''); //do konfiguracji
+				}
 			}
 			
 			$nmail->Subject = $email_subject; //do konfiguracji
@@ -798,7 +804,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				return false;
 			} else {
 				
-				if ($send_user == 1) {
+				if ($send_user == 1 && !empty($owner_email)) {
 					Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $recipients_array)." ".$owner_email);
 					return true;
 				} else {
@@ -809,7 +815,6 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			
 			
 		}
-		
 		static function sendOneMail($id=null) {
     
 			global $CFG_GLPI, $DB;
@@ -820,9 +825,17 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			
 			$nmail = new GLPIMailer();
 			
-			$nmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
+			// FIX: Assurer que le nom de l'expéditeur n'est jamais null
+			$sender_name = $CFG_GLPI["admin_email_name"] ?? '';
+			$nmail->SetFrom($CFG_GLPI["admin_email"], $sender_name, false);
 			
 			$doc_id = $_POST["doc_id"];
+
+			// Initialiser les variables
+			$recipients = '';
+			$send_user = 0;
+			$owner_email = null;
+			$final_recipients = []; // Pour tracer les destinataires valides
 			
 			// if email is filled manually
 			if (isset($_POST["em_list"])) {
@@ -863,24 +876,41 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			
 			$recipients_array = explode(';', $recipients);
 			
-			// Updated DB->request syntax
-			$req2 = $DB->request([
-				'FROM' => 'glpi_useremails',
-				'WHERE' => ['users_id' => $id, 'is_default' => 1]
-			]);
-							
-			if ($row2 = $req2->current()) {
-				$owner_email = $row2["email"];
+			// Récupérer l'email du propriétaire si nécessaire
+			if (!empty($send_user) && $send_user == 1 && !is_null($id)) {
+				// Updated DB->request syntax
+				$req2 = $DB->request([
+					'FROM' => 'glpi_useremails',
+					'WHERE' => ['users_id' => $id, 'is_default' => 1]
+				]);
+								
+				if ($row2 = $req2->current()) {
+					$owner_email = $row2["email"];
+				}
 			}
-			
+
+			// Ajouter l'email du propriétaire s'il est valide
 			if (!empty($send_user) && $send_user == 1) {
-				$nmail->AddAddress($owner_email);
+				if (!empty($owner_email)) {
+					// FIX: Ajout de '' comme deuxième argument
+					$nmail->AddAddress($owner_email, '');
+					$final_recipients[] = $owner_email;
+				}
 			}
 			
+			// Ajouter les autres destinataires
 			foreach($recipients_array as $recipient) {
 				if (!empty($recipient)) {
-					$nmail->AddAddress($recipient);
+					// FIX: Ajout de '' comme deuxième argument
+					$nmail->AddAddress($recipient, '');
+					$final_recipients[] = $recipient;
 				}
+			}
+
+			// Vérifier si aucun destinataire n'a été ajouté
+			if (empty($final_recipients)) {
+				Session::addMessageAfterRedirect(__('No recipients specified. Email not sent.'), false, ERROR);
+				return false;
 			}
 			
 			// Récupération et vérification du document
@@ -911,16 +941,11 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				Session::addMessageAfterRedirect(__('Failed to send email'), false, ERROR);
 				return false;
 			} else {
-				if (!empty($send_user) && $send_user == 1) {
-					Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $recipients_array)." ".$owner_email);
-				} else {
-					Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $recipients_array));
-				}
+				// Utiliser la liste finale pour le message de succès
+				Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $final_recipients));
 				return true;
 			}
-		}
-		
-	
+		}		
 }
 
 
