@@ -480,17 +480,20 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				]);
 					
 				if ($row = $req->current()) {
-					// We must NOT escape here. This content is intended to be HTML for the PDF.
-					// nl2br is correct.
-					$content = nl2br($row["content"]);
+					$content = $row["content"];
+					
 					$content = str_replace("{cur_date}", date("d.m.Y"), $content);
 					$content = str_replace("{owner}", $owner, $content);
 					$content = str_replace("{admin}", $author, $content);
-					$upper_content = nl2br($row["upper_content"]);
+
+					$upper_content = $row["upper_content"];
+
 					$upper_content = str_replace("{cur_date}", date("d.m.Y"), $upper_content);
 					$upper_content = str_replace("{owner}", $owner, $upper_content);
 					$upper_content = str_replace("{admin}", $author, $upper_content);
-					$footer = nl2br($row["footer"]);
+
+					$footer = $row["footer"];
+
 					$title = $row["title"];
 					$title = str_replace("{owner}", $owner, $title);
 					$title_template = $row["name"];
