@@ -142,7 +142,7 @@ if (!empty($number)) {
 <br>
 
 <table>
-    <tr><td style="height: 10mm;"></td></tr>
+    <tr><td style="height: 5mm;"></td></tr>
 </table>
 
 <table>
@@ -150,7 +150,7 @@ if (!empty($number)) {
 </table>
 
 <table>
-    <tr><td style="height: 20mm;"></td></tr>
+    <tr><td style="height: 5mm;"></td></tr>
 </table>
 
 <table style="width: 100%; border-collapse: collapse;">

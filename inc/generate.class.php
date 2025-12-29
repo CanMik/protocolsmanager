@@ -509,6 +509,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
             $registration_number = $userExtra['registration_number'];
             $usertitle_name      = $userExtra['title'];
             $usercategory_name   = $userExtra['category'];
+            $prot_num = self::getDocNumber();
 
             // Obtener configuración del documento
             $req = $DB->request([
@@ -523,7 +524,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
             $email_subject = '';
             $recipients = '';
             $full_img_name = '';
-            $orientation = 'portrait';
+            $orientation = 'landscape';
             $email_mode = 0;
             $send_user = 0;
 
@@ -537,9 +538,10 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
                 $font = !empty($row["font"]) ? $row["font"] : $font;
                 $fontsize = !empty($row["fontsize"]) ? $row["fontsize"] : $fontsize;
                 $city = $row["city"];
-                $orientation = $row["orientation"];
                 $email_mode = $row["email_mode"];
                 $email_template = $row["email_template"];
+                $serial_mode = $row["serial_mode"];
+                $author_state = $row["author_state"];
                 
                 // Reemplazos comunes
                 $replacements = [
