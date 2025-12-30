@@ -70,7 +70,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         }
 
         // Obtener datos del usuario
-        $iterator = $DB->request('glpi_users', ['id' => $user_id]);
+        $iterator = $DB->request(['FROM' => 'glpi_users', 'WHERE' => ['id' => $user_id]]);
         $user_row = $iterator->current();
 
         if ($user_row) {
@@ -727,7 +727,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         
         $entity = Session::getActiveEntity(); // Valor por defecto
 
-        $req1 = $DB->request('glpi_users', ['id' => $id]);
+        $req1 = $DB->request(['FROM' => 'glpi_users', 'WHERE' => ['id' => $id]]);
         if ($row1 = $req1->current()) {
             $entity = $row1["entities_id"];
         }
@@ -738,7 +738,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         
         // Obtener ID de categoría de documento por nombre
         $doc_cat_id = 0;
-        $req2 = $DB->request('glpi_documentcategories', ['name' => $title]);
+        $req2 = $DB->request(['FROM' => 'glpi_documentcategories', 'WHERE' => ['name' => $title]]);
         if ($row2 = $req2->current()) {
             $doc_cat_id = $row2["id"];
         }
@@ -782,7 +782,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         $sender_name = $CFG_GLPI["admin_email_name"] ?? '';
         $nmail->SetFrom($CFG_GLPI["admin_email"], $sender_name, false);
         
-        $req = $DB->request('glpi_documents', ['id' => $doc_id]);
+        $req = $DB->request(['FROM' => 'glpi_documents', 'WHERE' => ['id' => $doc_id]]);
         
         if ($row = $req->current()) {
             $fullpath = GLPI_VAR_DIR . '/' . $row["filepath"];
@@ -902,7 +902,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         }
         
         if (!empty($doc_id)) {
-            $req = $DB->request('glpi_documents', ['id' => $doc_id]);
+            $req = $DB->request(['FROM' => 'glpi_documents', 'WHERE' => ['id' => $doc_id]]);
             if ($row = $req->current()) {
                 $fullpath = GLPI_VAR_DIR . '/' . $row["filepath"];
                 $filename = $row["filename"];
