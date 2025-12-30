@@ -62,6 +62,8 @@ function plugin_init_protocolsmanager(): void
     Plugin::registerClass('PluginProtocolsmanagerProfile', ['addtabon' => ['Profile']]);
     Plugin::registerClass('PluginProtocolsmanagerConfig',  ['addtabon' => ['Config']]);
 
+    SessionManager::registerPluginStatelessPath("protocolsmanager", "#^/front/api.php/#");
+
     // --- SÉCURITÉ : ne pas appeler la table avant qu’elle n’existe ---
     if ($DB->tableExists('glpi_plugin_protocolsmanager_profiles')) {
         if (class_exists('PluginProtocolsmanagerProfile')
