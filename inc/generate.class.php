@@ -23,7 +23,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
             $PluginProtocolsmanagerGenerate = new self();
             $PluginProtocolsmanagerGenerate->showContent($item);
         } else {
-            echo "<div align='center'><br><img src='".$CFG_GLPI['root_doc']."/pics/warning.png'><br>".__("Access denied")."</div>";
+            echo "<div align='center'><br><img src='". htmlescape($CFG_GLPI['root_doc']) ."/pics/warning.png'><br>".__("Access denied")."</div>";
         }
     }
     
@@ -130,7 +130,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         $counter    = 0;
 
         echo "<br>";
-        echo "<form method='post' name='user_field".$rand."' id='user_field".$rand."' action=\"" . $CFG_GLPI["root_doc"] . "/plugins/protocolsmanager/front/generate.form.php\">";
+        echo "<form method='post' name='user_field". htmlescape($rand) ."' id='user_field". htmlescape($rand) ."' action=\"" . htmlescape($CFG_GLPI["root_doc"]) . "/plugins/protocolsmanager/front/generate.form.php\">";
         
         // Tabla de selección de plantilla
         echo "<table class='tab_cadre_fixe'><tr><td style ='width:25%'></td>";
@@ -230,7 +230,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
                     echo "<td class='center'>" . ($mod_name ? htmlescape($mod_name) : '&nbsp;') . "</td>";
                     
                     // Link/Name
-                    echo "<td class='center'>$link</td>"; 
+                    echo "<td class='center'>" . $link . "</td>"; 
                     
                     // State (Optimized)
                     $sta_name = '';
@@ -368,7 +368,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         $conca .= '<h4 class="modal-title">'.__("Send").' email</h4>';
         $conca .= '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>';
         $conca .= '</div><div class="modal-body" title="'.__("Send").' email"><p>Select recipients from template or enter manually to send email</p><br><br>';
-        $conca .= '<form method="post" action="'.$CFG_GLPI["root_doc"].'/plugins/protocolsmanager/front/generate.form.php">';
+        $conca .= '<form method="post" action="'. htmlescape($CFG_GLPI["root_doc"]) .'/plugins/protocolsmanager/front/generate.form.php">';
 
         $conca .= Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
 
@@ -413,10 +413,10 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 
         // Table for existing documents
         echo "<div class='spaced'>";
-        echo "<form method='post' name='docs_form' action='".$CFG_GLPI["root_doc"]."/plugins/protocolsmanager/front/generate.form.php'>";
+        echo "<form method='post' name='docs_form' action='" . htmlescape($CFG_GLPI["root_doc"]) . "/plugins/protocolsmanager/front/generate.form.php'>";
         echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
 
-        echo "<table class='tab_cadre_fixe'><td style='width:5%'><img src='".$CFG_GLPI["root_doc"]."/plugins/protocolsmanager/img/arrow-left-top.png'></td><td style='width:5%'>";
+        echo "<table class='tab_cadre_fixe'><td style='width:5%'><img src='" . htmlescape($CFG_GLPI["root_doc"]) . "/plugins/protocolsmanager/img/arrow-left-top.png'></td><td style='width:5%'>";
         echo "<input type='submit' name='delete' class='submit' value=".__('Delete').">";
         echo "</td><td style='width:90%'></table>";
         
@@ -524,7 +524,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
             $email_subject = '';
             $recipients = '';
             $full_img_name = '';
-            $orientation = 'landscape';
+            $orientation = 'portrait';
             $email_mode = 0;
             $send_user = 0;
 
@@ -537,6 +537,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
                 $full_img_name = $row["logo"];
                 $font = !empty($row["font"]) ? $row["font"] : $font;
                 $fontsize = !empty($row["fontsize"]) ? $row["fontsize"] : $fontsize;
+                $orientation = $row["orientation"];
                 $city = $row["city"];
                 $email_mode = $row["email_mode"];
                 $email_template = $row["email_template"];

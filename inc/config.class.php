@@ -10,7 +10,7 @@ class PluginProtocolsmanagerConfig extends CommonDBTM {
 		if ($plugin_conf == 'w') {	
 			self::displayContent();	
 		} else {
-			echo "<div align='center'><br><img src='".$CFG_GLPI['root_doc']."/pics/warning.png'><br>".__("Access denied")."</div>";
+			echo "<div align='center'><br><img src='". htmlescape($CFG_GLPI['root_doc']) ."/pics/warning.png'><br>".__("Access denied")."</div>";
 		}
 	}
 	
