@@ -97,7 +97,7 @@ $lp = 1;
 
 if (!empty($number)) {
     foreach ($number as $key) {
-        echo '<tr><td>' . $lp++ . '</td>';
+       echo '<tr><td>' . htmlescape($lp++) . '</td>';
 
         // Type
         echo '<td>' . htmlspecialchars($type_name[$key] ?? '') . '</td>';

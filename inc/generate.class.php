@@ -23,7 +23,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
             $PluginProtocolsmanagerGenerate = new self();
             $PluginProtocolsmanagerGenerate->showContent($item);
         } else {
-            echo "<div align='center'><br><img src='".$CFG_GLPI['root_doc']."/pics/warning.png'><br>".__("Access denied")."</div>";
+            echo "<div align='center'><br><img src='". htmlescape($CFG_GLPI['root_doc']) ."/pics/warning.png'><br>".__("Access denied")."</div>";
         }
     }
     
@@ -70,7 +70,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         }
 
         // Obtener datos del usuario
-        $iterator = $DB->request('glpi_users', ['id' => $user_id]);
+        $iterator = $DB->request(['FROM' => 'glpi_users', 'WHERE' => ['id' => $user_id]]);
         $user_row = $iterator->current();
 
         if ($user_row) {
@@ -130,7 +130,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         $counter    = 0;
 
         echo "<br>";
-        echo "<form method='post' name='user_field".$rand."' id='user_field".$rand."' action=\"" . $CFG_GLPI["root_doc"] . "/plugins/protocolsmanager/front/generate.form.php\">";
+        echo "<form method='post' name='user_field". htmlescape($rand) ."' id='user_field". htmlescape($rand) ."' action=\"" . htmlescape($CFG_GLPI["root_doc"]) . "/plugins/protocolsmanager/front/generate.form.php\">";
         
         // Tabla de selección de plantilla
         echo "<table class='tab_cadre_fixe'><tr><td style ='width:25%'></td>";
@@ -230,7 +230,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
                     echo "<td class='center'>" . ($mod_name ? htmlescape($mod_name) : '&nbsp;') . "</td>";
                     
                     // Link/Name
-                    echo "<td class='center'>$link</td>"; 
+                    echo "<td class='center'>" . $link . "</td>";
                     
                     // State (Optimized)
                     $sta_name = '';
@@ -368,7 +368,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         $conca .= '<h4 class="modal-title">'.__("Send").' email</h4>';
         $conca .= '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>';
         $conca .= '</div><div class="modal-body" title="'.__("Send").' email"><p>Select recipients from template or enter manually to send email</p><br><br>';
-        $conca .= '<form method="post" action="'.$CFG_GLPI["root_doc"].'/plugins/protocolsmanager/front/generate.form.php">';
+        $conca .= '<form method="post" action="'. htmlescape($CFG_GLPI["root_doc"]) .'/plugins/protocolsmanager/front/generate.form.php">';
 
         $conca .= Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
 
@@ -509,6 +509,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
             $registration_number = $userExtra['registration_number'];
             $usertitle_name      = $userExtra['title'];
             $usercategory_name   = $userExtra['category'];
+            $prot_num = self::getDocNumber();
 
             // Obtener configuración del documento
             $req = $DB->request([
@@ -540,6 +541,8 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
                 $orientation = $row["orientation"];
                 $email_mode = $row["email_mode"];
                 $email_template = $row["email_template"];
+                $serial_mode = $row["serial_mode"];
+                $author_state = $row["author_state"];
                 
                 // Reemplazos comunes
                 $replacements = [
@@ -724,7 +727,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         
         $entity = Session::getActiveEntity(); // Valor por defecto
 
-        $req1 = $DB->request('glpi_users', ['id' => $id]);
+        $req1 = $DB->request(['FROM' => 'glpi_users', 'WHERE' => ['id' => $id]]);
         if ($row1 = $req1->current()) {
             $entity = $row1["entities_id"];
         }
@@ -735,7 +738,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         
         // Obtener ID de categoría de documento por nombre
         $doc_cat_id = 0;
-        $req2 = $DB->request('glpi_documentcategories', ['name' => $title]);
+        $req2 = $DB->request(['FROM' => 'glpi_documentcategories', 'WHERE' => ['name' => $title]]);
         if ($row2 = $req2->current()) {
             $doc_cat_id = $row2["id"];
         }
@@ -779,7 +782,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         $sender_name = $CFG_GLPI["admin_email_name"] ?? '';
         $nmail->SetFrom($CFG_GLPI["admin_email"], $sender_name, false);
         
-        $req = $DB->request('glpi_documents', ['id' => $doc_id]);
+        $req = $DB->request(['FROM' => 'glpi_documents', 'WHERE' => ['id' => $doc_id]]);
         
         if ($row = $req->current()) {
             $fullpath = GLPI_VAR_DIR . '/' . $row["filepath"];
@@ -899,7 +902,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
         }
         
         if (!empty($doc_id)) {
-            $req = $DB->request('glpi_documents', ['id' => $doc_id]);
+            $req = $DB->request(['FROM' => 'glpi_documents', 'WHERE' => ['id' => $doc_id]]);
             if ($row = $req->current()) {
                 $fullpath = GLPI_VAR_DIR . '/' . $row["filepath"];
                 $filename = $row["filename"];

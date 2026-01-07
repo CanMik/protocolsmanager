@@ -65,7 +65,7 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
         echo "<tr class='tab_bg_5'><th colspan='2'>" . __('Protocols manager', 'protocolsmanager') . "</th></tr>";
 
         foreach (self::$rightFields as $field => $label) {
-            echo "<tr class='tab_bg_2'><td width='30%'>" . __($label, 'protocolsmanager') . "</td><td>";
+            echo "<tr class='tab_bg_2'><td width='30%'>" . __(htmlescape($label), 'protocolsmanager') . "</td><td>";
             Html::showCheckbox([
                 'name'    => $field,
                 'checked' => ($rights[$field] === 'w'),
@@ -76,8 +76,8 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
 
         echo "<tr class='tab_bg_5'><th colspan='2'>";
         echo "<input type='submit' class='submit' name='update' value='" . __('Save', 'protocolsmanager') . "'>";
-        echo Html::hidden('profile_id', ['value' => $profile_id]);
-        echo Html::hidden('edit_flag', ['value' => $edit_flag]);
+        echo Html::hidden('profile_id', ['value' => htmlescape($profile_id)]);
+        echo Html::hidden('edit_flag', ['value' => htmlescape($edit_flag)]);
         echo "</th></tr>";
 
         echo "</table>";
