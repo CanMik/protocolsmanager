@@ -1,13 +1,29 @@
 <?php
 
 /**
+ * GLPI 11 Discovery Wrapper for Install
+ */
+function plugin_install_protocolsmanager(): bool
+{
+    return plugin_protocolsmanager_install();
+}
+
+/**
+ * GLPI 11 Discovery Wrapper for Uninstall
+ */
+function plugin_uninstall_protocolsmanager(): bool
+{
+    return plugin_protocolsmanager_uninstall();
+}
+
+/**
  * Install the plugin
  */
 function plugin_protocolsmanager_install(): bool
 {
     global $DB;
-    $version    = plugin_version_protocolsmanager();
-    $migration  = new Migration($version['version']);
+    $version = plugin_version_protocolsmanager();
+    $migration = new Migration($version['version']);
 
     // Helper: create table if not exists
     $createTable = function (string $name, string $schema, array $inserts = []) use ($DB) {
@@ -174,7 +190,7 @@ function plugin_protocolsmanager_uninstall(): bool
 
     foreach ($tables as $table) {
         if ($DB->tableExists($table)) {
-            $DB->query("DROP TABLE IF EXISTS `$table`");
+            $DB->doQuery("DROP TABLE IF EXISTS `$table`");
         }
     }
 
