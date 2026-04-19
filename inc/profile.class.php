@@ -9,10 +9,10 @@
  */
 class PluginProtocolsmanagerProfile extends CommonDBTM
 {
-    /** @var array<string,string> Profile rights handled by this plugin */
+    /** @var array<string,string> Profile rights: field => i18n msgid */
     private static $rightFields = [
         'plugin_conf' => 'Plugin configuration',
-        'tab_access'  => 'Protocols manager tab access'
+        'tab_access'  => 'Protocols manager tab access',
     ];
 
     /**
@@ -44,7 +44,11 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
         $edit_flag = 1; // insert by default
 
         // Load existing rights if any
-        $req = $DB->request('glpi_plugin_protocolsmanager_profiles', ['profile_id' => $profile_id]);
+        // Mise à jour de la syntaxe de $DB->request
+        $req = $DB->request([
+            'FROM' => 'glpi_plugin_protocolsmanager_profiles',
+            'WHERE' => ['profile_id' => $profile_id]
+        ]);
         if ($row = $req->current()) {
             foreach (self::$rightFields as $field => $_) {
                 $rights[$field] = $row[$field] ?? '';
@@ -52,13 +56,17 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
             $edit_flag = 0; // update mode
         }
 
+        // Note : $CFG_GLPI['root_doc'] est correct ici, mais le formulaire pointe vers un script
+        // qui devrait être dans /plugins/protocolsmanager/front/profile.form.php
+        // La documentation indique que les URL /plugins/... sont gérées.
         echo "<form name='profiles' action='{$CFG_GLPI['root_doc']}/plugins/protocolsmanager/front/profile.form.php' method='post'>";
+        echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
         echo "<div class='center'>";
         echo "<table class='tab_cadre_fixehov'>";
         echo "<tr class='tab_bg_5'><th colspan='2'>" . __('Protocols manager', 'protocolsmanager') . "</th></tr>";
 
         foreach (self::$rightFields as $field => $label) {
-            echo "<tr class='tab_bg_2'><td width='30%'>" . __($label, 'protocolsmanager') . "</td><td>";
+            echo "<tr class='tab_bg_2'><td width='30%'>" . htmlescape(__($label, 'protocolsmanager')) . "</td><td>";
             Html::showCheckbox([
                 'name'    => $field,
                 'checked' => ($rights[$field] === 'w'),
@@ -69,8 +77,8 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
 
         echo "<tr class='tab_bg_5'><th colspan='2'>";
         echo "<input type='submit' class='submit' name='update' value='" . __('Save', 'protocolsmanager') . "'>";
-        echo Html::hidden('profile_id', ['value' => $profile_id]);
-        echo Html::hidden('edit_flag', ['value' => $edit_flag]);
+        echo Html::hidden('profile_id', ['value' => htmlescape($profile_id)]);
+        echo Html::hidden('edit_flag', ['value' => htmlescape($edit_flag)]);
         echo "</th></tr>";
 
         echo "</table>";
@@ -90,7 +98,9 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
             'plugin_conf'  => $_POST['plugin_conf'] ?? '',
             'tab_access'   => $_POST['tab_access'] ?? ''
         ];
-
+        
+        // C'est correct. $DB->insert et $DB->update gèrent la protection SQL.
+        // Pas besoin de addslashes() sur les données de $_POST.
         if ((int)$_POST['edit_flag'] === 1) {
             $DB->insert('glpi_plugin_protocolsmanager_profiles', $data);
         } else {
@@ -109,9 +119,9 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
 			return false;
 		}
 	
+        // Mise à jour de la syntaxe de $DB->request
 		$res = $DB->request(
-			'glpi_plugin_protocolsmanager_profiles',
-			['profile_id' => $profile_id]
+			['FROM' => 'glpi_plugin_protocolsmanager_profiles', 'WHERE' => ['profile_id' => $profile_id]]
 		);
 	
 		if ($row = $res->current()) {

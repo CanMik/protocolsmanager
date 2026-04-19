@@ -6,7 +6,7 @@ msgstr ""
 "PO-Revision-Date: 2026-03-16 00:00+0000\n"
 "Last-Translator: Edwin Elias – monta990\n"
 "Language-Team: \n"
-"Language: en_GB\n"
+"Language: es_MX\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,241 +14,241 @@ msgstr ""
 "X-Generator: protocolsmanager build 2026\n"
 
 msgid "Add Custom Fields"
-msgstr "Add Custom Fields"
+msgstr "Agregar campos personalizados"
 
 msgid "Add emails - use ; to separate"
-msgstr "Add emails - use ; to separate"
+msgstr "Agregar correos - usa ; para separar"
 
 msgid "Administrator"
-msgstr "Administrator"
+msgstr "Administrador"
 
 msgid "Asset"
-msgstr "Asset"
+msgstr "Activo"
 
 msgid "Attachment file not found: "
-msgstr "Attachment file not found: "
+msgstr "Archivo adjunto no encontrado: "
 
 msgid "Comment"
-msgstr "Comment"
+msgstr "Comentario"
 
 msgid "Configuration saved."
-msgstr "Configuration saved."
+msgstr "Configuración guardada."
 
 msgid "Delete row"
-msgstr "Delete row"
+msgstr "Eliminar fila"
 
 msgid "Delete selected documents?"
-msgstr "Delete selected documents?"
+msgstr "¿Eliminar los documentos seleccionados?"
 
 msgid "Delete this email template?"
-msgstr "Delete this email template?"
+msgstr "¿Eliminar esta plantilla de correo?"
 
 msgid "Delete this template?"
-msgstr "Delete this template?"
+msgstr "¿Eliminar esta plantilla?"
 
 msgid "Document content"
-msgstr "Document content"
+msgstr "Contenido del documento"
 
 msgid "Document not found"
-msgstr "Document not found"
+msgstr "Documento no encontrado"
 
 msgid "Document title"
-msgstr "Document title"
+msgstr "Título del documento"
 
 msgid "Don't send to user"
-msgstr "Don't send to user"
+msgstr "No enviar al usuario"
 
 msgid "Email content"
-msgstr "Email content"
+msgstr "Contenido del correo"
 
 msgid "Email sent"
-msgstr "Email sent"
+msgstr "Correo enviado"
 
 msgid "Email settings"
-msgstr "Email settings"
+msgstr "Configuración de correo"
 
 msgid "Email subject"
-msgstr "Email subject"
+msgstr "Asunto del correo"
 
 msgid "Email template"
-msgstr "Email template"
+msgstr "Plantilla de correo"
 
 msgid "Email template not found."
-msgstr "Email template not found."
+msgstr "Plantilla de correo no encontrada."
 
 msgid "Email templates"
-msgstr "Email templates"
+msgstr "Plantillas de correo"
 
 msgid "Enable email autosending"
-msgstr "Enable email autosending"
+msgstr "Activar envío automático de correo"
 
 msgid "Enter recipients manually"
-msgstr "Enter recipients manually"
+msgstr "Ingresar destinatarios manualmente"
 
 msgid "Equipment"
-msgstr "Equipment"
+msgstr "Equipos"
 
 msgid "Equipment report"
-msgstr "Equipment report"
+msgstr "Reporte de equipos"
 
 msgid "Failed to send email"
-msgstr "Failed to send email"
+msgstr "Error al enviar el correo"
 
 msgid "File size too large."
-msgstr "File size too large."
+msgstr "El archivo es demasiado grande."
 
 msgid "Fill mandatory fields"
-msgstr "Fill mandatory fields"
+msgstr "Completa los campos obligatorios"
 
 msgid "Font"
-msgstr "Font"
+msgstr "Fuente"
 
 msgid "Font size"
-msgstr "Font size"
+msgstr "Tamaño de fuente"
 
 msgid "GLPI Protocols Manager mail"
-msgstr "GLPI Protocols Manager mail"
+msgstr "Correo del Administrador de Protocolos GLPI"
 
 msgid "Generated documents"
-msgstr "Generated documents"
+msgstr "Documentos generados"
 
 msgid "Help"
-msgstr "Help"
+msgstr "Ayuda"
 
 msgid "Invalid email address(es) skipped: "
-msgstr "Invalid email address(es) skipped: "
+msgstr "Dirección(es) de correo inválida(s) omitida(s): "
 
 msgid "Landscape"
-msgstr "Landscape"
+msgstr "Horizontal"
 
 msgid "Logo & appearance"
-msgstr "Logo & appearance"
+msgstr "Logo y apariencia"
 
 msgid "Logo height (px)"
-msgstr "Logo height (px)"
+msgstr "Alto del logo (px)"
 
 msgid "Logo width (px)"
-msgstr "Logo width (px)"
+msgstr "Ancho del logo (px)"
 
 msgid "No recipients specified. Email not sent."
-msgstr "No recipients specified. Email not sent."
+msgstr "No se especificaron destinatarios. Correo no enviado."
 
 msgid "Off"
-msgstr "Off"
+msgstr "No"
 
 msgid "On"
-msgstr "On"
+msgstr "Sí"
 
 msgid "Please select at least one item."
-msgstr "Please select at least one item."
+msgstr "Por favor selecciona al menos un elemento."
 
 msgid "Portrait"
-msgstr "Portrait"
+msgstr "Vertical"
 
 msgid "Protocols Manager"
-msgstr "Protocols Manager"
+msgstr "Administrador de Protocolos"
 
 msgid "Protocols manager"
-msgstr "Protocols Manager"
+msgstr "Administrador de Protocolos"
 
 msgid "Recipients (use ; to separate emails)"
-msgstr "Recipients (use ; to separate emails)"
+msgstr "Destinatarios (usa ; para separar correos)"
 
 msgid "Save"
-msgstr "Save"
+msgstr "Guardar"
 
 msgid "Select all"
-msgstr "Select all"
+msgstr "Seleccionar todo"
 
 msgid "Select recipients from template"
-msgstr "Select recipients from template"
+msgstr "Seleccionar destinatarios de la plantilla"
 
 msgid "Select recipients from template or enter manually to send email"
-msgstr "Select recipients from template or enter manually to send email"
+msgstr "Selecciona destinatarios de la plantilla o ingrésalos manualmente para enviar el correo"
 
 msgid "Select who should generate the pdf"
-msgstr "Select who should generate the PDF"
+msgstr "Selecciona quién debe generar el PDF"
 
 msgid "Send email"
-msgstr "Send email"
+msgstr "Enviar correo"
 
 msgid "Send to user"
-msgstr "Send to user"
+msgstr "Enviar al usuario"
 
 msgid "Serial and inventory number in separate columns"
-msgstr "Serial and inventory number in separate columns"
+msgstr "Número de serie e inventario en columnas separadas"
 
 msgid "Serial or inventory number (if serial is empty)"
-msgstr "Serial or inventory number (if serial is empty)"
+msgstr "Número de serie o inventario (si el serie está vacío)"
 
 msgid "Subject"
-msgstr "Subject"
+msgstr "Asunto"
 
 msgid "Template"
-msgstr "Template"
+msgstr "Plantilla"
 
 msgid "Template name"
-msgstr "Template name"
+msgstr "Nombre de la plantilla"
 
 msgid "Template not found."
-msgstr "Template not found."
+msgstr "Plantilla no encontrada."
 
 msgid "Templates settings"
-msgstr "Templates settings"
+msgstr "Configuración de plantillas"
 
 msgid "The user who generates the document"
-msgstr "The user who generates the document"
+msgstr "El usuario que genera el documento"
 
 msgid "This plugin requires GLPI >= 10.0.0 and < 12.0.0"
-msgstr "This plugin requires GLPI >= 10.0.0 and < 12.0.0"
+msgstr "Este plugin requiere GLPI >= 10.0.0 y < 12.0.0"
 
 msgid "Upper Content"
-msgstr "Upper Content"
+msgstr "Contenido superior"
 
 msgid "User"
-msgstr "User"
+msgstr "Usuario"
 
 msgid "Word breaking"
-msgstr "Word breaking"
+msgstr "Corte de palabras"
 
 msgid "Wrong file type. Only JPG and PNG files are accepted."
-msgstr "Wrong file type. Only JPG and PNG files are accepted."
+msgstr "Tipo de archivo incorrecto. Solo se aceptan JPG y PNG."
 
 msgid "You can use {owner} here."
-msgstr "You can use {owner} here."
+msgstr "Puedes usar {owner} aquí."
 
 msgid "You can use {owner} or {admin} here."
-msgstr "You can use {owner} or {admin} here."
+msgstr "Puedes usar {owner} o {admin} aquí."
 
 msgid "email template"
-msgstr "email template"
+msgstr "plantilla de correo"
 
 msgid "template"
-msgstr "template"
+msgstr "plantilla"
 
 msgid "Plugin configuration"
-msgstr "Plugin configuration"
+msgstr "Configuración del plugin"
 
 msgid "Protocols manager tab access"
-msgstr "Protocols manager tab access"
+msgstr "Acceso a la pestaña del administrador de protocolos"
 
 msgid "Failed to generate document. Please try again."
-msgstr "Failed to generate document. Please try again."
+msgstr "Error al generar el documento. Por favor intenta de nuevo."
 
 msgid "Footer"
-msgstr "Footer"
+msgstr "Pie de página"
 
 msgid "Date format"
-msgstr "Date format"
+msgstr "Formato de fecha"
 
 msgid "Numeric (DD.MM.YYYY)"
-msgstr "Numeric (DD.MM.YYYY)"
+msgstr "Numérico (DD.MM.AAAA)"
 
 msgid "Written date — e.g. 16 de marzo de 2026"
-msgstr "Written date — e.g. 16 March 2026"
+msgstr "Fecha escrita — ej. 16 de marzo de 2026"
 
 msgid "No document selected."
-msgstr "No document selected."
+msgstr "No se seleccionó ningún documento."
 
 msgid "Folio"
 msgstr "Folio"

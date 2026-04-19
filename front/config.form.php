@@ -1,8 +1,7 @@
 <?php
 	
-	include ('../../../inc/includes.php');
-	
-	Session::haveRight("config", UPDATE);
+	// checkRight() redirige y aborta si no tiene permiso; haveRight() sólo devuelve bool
+	Session::checkRight("config", UPDATE);
 	
 	Html::header(PluginProtocolsmanagerConfig::getTypeName(2), '', "config", "PluginProtocolsmanagerMenu");
 			   
@@ -53,24 +52,7 @@
 	$PluginProtocolsmanagerConfig->showFormProtocolsmanager();
 	unset($_SESSION["menu_mode"]);
 	
+	Html::footer();
 	
 ?>
 
-<script>
-
-/* $(function(){
-	$("#template_button").click(function(){
-		$("#template_settings").show();
-		$("#show_configs").show();
-		$("#email_settings").hide();
-		$("#show_emailconfigs").hide();
-	});	
-	$("#email_button").click(function(){
-		$("#template_settings").hide();
-		$("#show_configs").hide();
-		$("#email_settings").show();
-		$("#show_emailconfigs").show();
-	});
-});	*/
-
-</script>

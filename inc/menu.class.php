@@ -16,7 +16,7 @@ class PluginProtocolsmanagerMenu extends CommonGLPI
     {
         return [
             'title' => self::getMenuName(),
-            'page'  => '/' . Plugin::getWebDir('protocolsmanager', false) . '/front/config.form.php',
+            'page'  => '/plugins/protocolsmanager/front/config.form.php', // Chemin mis à jour
             'icon'  => self::getIcon(),
         ];
     }

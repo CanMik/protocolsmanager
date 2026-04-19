@@ -1,8 +1,8 @@
 <root>
 	<name>Protocols Manager</name>
 	<key>protocolsmanager</key>
-	<state>stable</state> <!-- stable | unstable | beta | alpha -->
-	<logo>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/img/pdf_ico.png</logo>
+	<state>stable</state>
+	<logo>https://raw.githubusercontent.com/CanMik/protocolsmanager/master/img/pdf_ico.png</logo>
 	<description>
 	   <short>
 		  <en>Plugin to make configurable PDF reports with selected user inventory</en>
@@ -39,24 +39,24 @@
 			</pl>
 	   </long>
 	</description>
-	<homepage>https://github.com/mateusznitka/protocolsmanager</homepage>
-	<download>https://github.com/mateusznitka/protocolsmanager/releases</download>
-	<issues>https://github.com/mateusznitka/protocolsmanager/issues</issues>
-	<readme>https://github.com/mateusznitka/protocolsmanager/blob/master/README.md</readme>
+	<homepage>https://github.com/CanMik/protocolsmanager</homepage>
+	<download>https://github.com/CanMik/protocolsmanager/releases</download>
+	<issues>https://github.com/CanMik/protocolsmanager/issues</issues>
+	<readme>https://github.com/CanMik/protocolsmanager/blob/master/README.md</readme>
 	<authors>
 	   <author>Mateusz Nitka</author>
 	</authors>
 	<versions>
 	   <version>
-		  <num>1.4</num>
-		  <compatibility>9.5</compatibility>
-		  <compatibility>9.4</compatibility>
-		  <compatibility>9.3</compatibility>
+		  <num>1.7.0.0</num>
+		  <compatibility>10.0</compatibility>
+		  <compatibility>11.0</compatibility>
 	   </version>
 	</versions>
 	<langs>
-	   <lang>en_GB</lang>
-	   <lang>pl_PL</lang>
+		<lang>en_GB</lang>
+		<lang>pl_PL</lang>
+		<lang>es_MX</lang>
 	</langs>
 	<license>GPL v3</license>
 	<tags>
@@ -74,10 +74,10 @@
 	   </pl>
 	</tags>
 	<screenshots>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr5.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr4.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr2.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr3.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr1.png</screenshot>
+		<screenshot>https://raw.githubusercontent.com/CanMik/protocolsmanager/master/screenshots/scr5.png</screenshot>
+		<screenshot>https://raw.githubusercontent.com/CanMik/protocolsmanager/master/screenshots/scr4.png</screenshot>
+		<screenshot>https://raw.githubusercontent.com/CanMik/protocolsmanager/master/screenshots/scr2.png</screenshot>
+		<screenshot>https://raw.githubusercontent.com/CanMik/protocolsmanager/master/screenshots/scr3.png</screenshot>
+		<screenshot>https://raw.githubusercontent.com/CanMik/protocolsmanager/master/screenshots/scr1.png</screenshot>
 	</screenshots>
 </root>

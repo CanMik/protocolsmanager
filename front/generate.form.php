@@ -1,5 +1,6 @@
 <?php
-include ('../../../inc/includes.php');
+Session::checkRight('config', READ);
+
 $PluginProtocolsmanagerGenerate = new PluginProtocolsmanagerGenerate();
 
 if (isset($_REQUEST['generate'])) {

@@ -1,21 +1,25 @@
 <?php
 
+// Single source of truth for the plugin version.
+// Bump this constant — everything else reads from it automatically.
+define('PLUGIN_PROTOCOLSMANAGER_VERSION', '1.7.1.0');
+
 // Plugin version info
 function plugin_version_protocolsmanager(): array
 {
     return [
         'name'         => __('Protocols manager', 'protocolsmanager'),
-        'version'      => '1.5.7.6',
+        'version'      => PLUGIN_PROTOCOLSMANAGER_VERSION,
         'author'       => 'Mikail',
         'license'      => 'GPLv3+',
         'homepage'     => 'https://github.com/CanMik/protocolsmanager',
         'requirements' => [
             'glpi' => [
                 'min' => '10.0.0',
-                'max' => '11.0.0'
+                'max' => '12.0.0'
             ],
             'php'  => [
-                'min' => '7.4'
+                'min' => '8.0'
             ]
         ]
     ];
@@ -30,11 +34,12 @@ function plugin_protocolsmanager_check_config(): bool
 // Prerequisites check
 function plugin_protocolsmanager_check_prerequisites(): bool
 {
-    if (version_compare(GLPI_VERSION, '10.0.0', '<') || version_compare(GLPI_VERSION, '11.0.0', '>')) {
+    // Compatible with GLPI 10.0.x and 11.x
+    if (version_compare(GLPI_VERSION, '10.0.0', '<') || version_compare(GLPI_VERSION, '12.0.0', '>=')) {
         if (method_exists('Plugin', 'messageIncompatible')) {
-            Plugin::messageIncompatible('core', '10.0.0', '11.0.0');
+            Plugin::messageIncompatible('core', '10.0.0', '12.0.0');
         } else {
-            echo __('This plugin requires GLPI >= 10.0.0 and < 11.0.0', 'protocolsmanager');
+            echo __('This plugin requires GLPI >= 10.0.0 and < 12.0.0', 'protocolsmanager');
         }
         return false;
     }
@@ -47,16 +52,10 @@ function plugin_init_protocolsmanager(): void
     global $PLUGIN_HOOKS, $DB;
 
     $PLUGIN_HOOKS['csrf_compliant']['protocolsmanager'] = true;
-    $PLUGIN_HOOKS['add_css']['protocolsmanager']        = 'css/styles.css';
 
-    // Register tabs for supported item types
-    $tabTargets = [
-        'User', 'Printer', 'Peripheral', 'Computer',
-        'Phone', 'Line', 'Monitor'
-    ];
-    foreach ($tabTargets as $target) {
-        Plugin::registerClass('PluginProtocolsmanagerGenerate', ['addtabon' => [$target]]);
-    }
+    // The Protocols Manager tab is only shown on User items.
+    // Assets (Computer, Phone, etc.) are loaded dynamically from the user's assigned inventory.
+    Plugin::registerClass('PluginProtocolsmanagerGenerate', ['addtabon' => ['User']]);
 
     Plugin::registerClass('PluginProtocolsmanagerProfile', ['addtabon' => ['Profile']]);
     Plugin::registerClass('PluginProtocolsmanagerConfig',  ['addtabon' => ['Config']]);

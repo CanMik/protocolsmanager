@@ -1,35 +1,254 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: protocolsmanager v1.5.3.5\n"
+"Project-Id-Version: protocolsmanager 1.7.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-06 15:07+0000\n"
-"PO-Revision-Date: 2024-02-06 15:40+0100\n"
-"Last-Translator: \n"
-"Language-Team: peter.tuharsky@gmail.com\n"
+"POT-Creation-Date: 2026-03-16 00:00+0000\n"
+"PO-Revision-Date: 2026-03-16 00:00+0000\n"
+"Last-Translator: Edwin Elias – monta990\n"
+"Language-Team: \n"
 "Language: sk_SK\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
-"X-Generator: Poedit 3.2.2\n"
-"X-Poedit-Basepath: .\n"
+"X-Generator: protocolsmanager build 2026\n"
 
-#: inc/config.class.php:227
-msgid "Select who should generate the pdf"
-msgstr "Vyberte, kto má vytvoriť PDF"
+msgid "Add Custom Fields"
+msgstr "Pridať vlastné polia"
 
-#: inc/config.class.php:234
-msgid "The user who generates the document"
-msgstr "Používateľ, ktorý vytvára tento dokument"
+msgid "Add emails - use ; to separate"
+msgstr "Pridať e-maily - oddeľte ich pomocou ;"
 
-#: inc/config.class.php:148
+msgid "Administrator"
+msgstr "Administrátor"
+
+msgid "Asset"
+msgstr "Zariadenie"
+
+msgid "Attachment file not found: "
+msgstr "Príloha sa nenašla: "
+
+msgid "Comment"
+msgstr "Komentár"
+
+msgid "Configuration saved."
+msgstr "Konfigurácia uložená."
+
+msgid "Delete row"
+msgstr "Odstrániť riadok"
+
+msgid "Delete selected documents?"
+msgstr "Odstrániť vybrané dokumenty?"
+
+msgid "Delete this email template?"
+msgstr "Odstrániť túto e-mailovú šablónu?"
+
+msgid "Delete this template?"
+msgstr "Odstrániť túto šablónu?"
+
+msgid "Document content"
+msgstr "Obsah dokumentu"
+
+msgid "Document not found"
+msgstr "Dokument sa nenašiel"
+
 msgid "Document title"
-msgstr "Nadpis dokumentu"
+msgstr "Názov dokumentu"
 
-#: inc/config.class.php:149
+msgid "Don't send to user"
+msgstr "Neodosielať používateľovi"
+
+msgid "Email content"
+msgstr "Obsah e-mailu"
+
+msgid "Email sent"
+msgstr "E-mail odoslaný"
+
+msgid "Email settings"
+msgstr "Nastavenia e-mailu"
+
+msgid "Email subject"
+msgstr "Predmet e-mailu"
+
+msgid "Email template"
+msgstr "Šablóna e-mailu"
+
+msgid "Email template not found."
+msgstr "E-mailová šablóna sa nenašla."
+
+msgid "Email templates"
+msgstr "E-mailové šablóny"
+
+msgid "Enable email autosending"
+msgstr "Povoliť automatické odosielanie e-mailov"
+
+msgid "Enter recipients manually"
+msgstr "Zadať príjemcov ručne"
+
+msgid "Equipment"
+msgstr "Zariadenia"
+
+msgid "Equipment report"
+msgstr "Prehľad zariadení"
+
+msgid "Failed to send email"
+msgstr "Odoslanie e-mailu zlyhalo"
+
+msgid "File size too large."
+msgstr "Súbor je príliš veľký."
+
+msgid "Fill mandatory fields"
+msgstr "Vyplňte povinné polia"
+
+msgid "Font"
+msgstr "Písmo"
+
+msgid "Font size"
+msgstr "Veľkosť písma"
+
+msgid "GLPI Protocols Manager mail"
+msgstr "E-mail správcu protokolov GLPI"
+
+msgid "Generated documents"
+msgstr "Vygenerované dokumenty"
+
+msgid "Help"
+msgstr "Pomoc"
+
+msgid "Invalid email address(es) skipped: "
+msgstr "Neplatná(é) e-mailová(é) adresa(y) preskočená(é): "
+
+msgid "Landscape"
+msgstr "Na šírku"
+
+msgid "Logo & appearance"
+msgstr "Logo a vzhľad"
+
+msgid "Logo height (px)"
+msgstr "Výška loga (px)"
+
+msgid "Logo width (px)"
+msgstr "Šírka loga (px)"
+
+msgid "No recipients specified. Email not sent."
+msgstr "Nebol zadaný žiadny príjemca. E-mail nebol odoslaný."
+
+msgid "Off"
+msgstr "Vypnuté"
+
+msgid "On"
+msgstr "Zapnuté"
+
+msgid "Please select at least one item."
+msgstr "Vyberte aspoň jednu položku."
+
+msgid "Portrait"
+msgstr "Na výšku"
+
+msgid "Protocols Manager"
+msgstr "Správca protokolov"
+
+msgid "Protocols manager"
+msgstr "Správca protokolov"
+
+msgid "Recipients (use ; to separate emails)"
+msgstr "Príjemcovia (na oddelenie e-mailov použite ;)"
+
+msgid "Save"
+msgstr "Uložiť"
+
+msgid "Select all"
+msgstr "Vybrať všetko"
+
+msgid "Select recipients from template"
+msgstr "Vybrať príjemcov zo šablóny"
+
+msgid "Select recipients from template or enter manually to send email"
+msgstr "Vyberte príjemcov zo šablóny alebo ich zadajte ručne na odoslanie e-mailu"
+
+msgid "Select who should generate the pdf"
+msgstr "Vyberte, kto má generovať PDF"
+
+msgid "Send email"
+msgstr "Odoslať e-mail"
+
+msgid "Send to user"
+msgstr "Odoslať používateľovi"
+
+msgid "Serial and inventory number in separate columns"
+msgstr "Sériové a inventárne číslo v samostatných stĺpcoch"
+
+msgid "Serial or inventory number (if serial is empty)"
+msgstr "Sériové alebo inventárne číslo (ak je sériové prázdne)"
+
+msgid "Subject"
+msgstr "Predmet"
+
+msgid "Template"
+msgstr "Šablóna"
+
+msgid "Template name"
+msgstr "Názov šablóny"
+
+msgid "Template not found."
+msgstr "Šablóna sa nenašla."
+
+msgid "Templates settings"
+msgstr "Nastavenia šablón"
+
+msgid "The user who generates the document"
+msgstr "Používateľ, ktorý generuje dokument"
+
+msgid "This plugin requires GLPI >= 10.0.0 and < 12.0.0"
+msgstr "Tento plugin vyžaduje GLPI >= 10.0.0 a < 12.0.0"
+
+msgid "Upper Content"
+msgstr "Horný obsah"
+
+msgid "User"
+msgstr "Používateľ"
+
+msgid "Word breaking"
+msgstr "Zalamovanie slov"
+
+msgid "Wrong file type. Only JPG and PNG files are accepted."
+msgstr "Nesprávny typ súboru. Akceptujú sa len JPG a PNG."
+
 msgid "You can use {owner} here."
-msgstr "Môžete tu použiť premennú {owner}"
+msgstr "Tu môžete použiť {owner}."
 
-#: inc/config.class.php:182
 msgid "You can use {owner} or {admin} here."
-msgstr "Môžete tu použiť premennú {owner} alebo {admin} "
+msgstr "Tu môžete použiť {owner} alebo {admin}."
+
+msgid "email template"
+msgstr "šablóna e-mailu"
+
+msgid "template"
+msgstr "šablóna"
+
+msgid "Plugin configuration"
+msgstr "Konfigurácia pluginu"
+
+msgid "Protocols manager tab access"
+msgstr "Prístup k záložke správcu protokolov"
+
+msgid "Failed to generate document. Please try again."
+msgstr "Generovanie dokumentu zlyhalo. Skúste to znova."
+
+msgid "Footer"
+msgstr "Päta stránky"
+
+msgid "Date format"
+msgstr "Formát dátumu"
+
+msgid "Numeric (DD.MM.YYYY)"
+msgstr "Číselný (DD.MM.RRRR)"
+
+msgid "Written date — e.g. 16 de marzo de 2026"
+msgstr "Zapísaný dátum — napr. 16. marca 2026"
+
+msgid "No document selected."
+msgstr "Nebol vybraný žiadny dokument."
+
+msgid "Folio"
+msgstr "Číslo"

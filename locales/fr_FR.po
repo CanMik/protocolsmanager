@@ -1,35 +1,254 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: protocolsmanager 1.7.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-06 15:07+0000\n"
-"PO-Revision-Date: 2022-05-11 14:56+0200\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2026-03-16 00:00+0000\n"
+"PO-Revision-Date: 2026-03-16 00:00+0000\n"
+"Last-Translator: Edwin Elias – monta990\n"
 "Language-Team: \n"
-"Language: fr\n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.0.1\n"
-"X-Poedit-Basepath: .\n"
+"X-Generator: protocolsmanager build 2026\n"
 
-#: inc/config.class.php:227
-msgid "Select who should generate the pdf"
-msgstr "Sélectionner qui doit générer le pdf"
+msgid "Add Custom Fields"
+msgstr "Ajouter des champs personnalisés"
 
-#: inc/config.class.php:234
-msgid "The user who generates the document"
-msgstr "L'utilisateur qui génère le document"
+msgid "Add emails - use ; to separate"
+msgstr "Ajouter des e-mails - utiliser ; pour séparer"
 
-#: inc/config.class.php:148
+msgid "Administrator"
+msgstr "Administrateur"
+
+msgid "Asset"
+msgstr "Actif"
+
+msgid "Attachment file not found: "
+msgstr "Fichier joint introuvable : "
+
+msgid "Comment"
+msgstr "Commentaire"
+
+msgid "Configuration saved."
+msgstr "Configuration enregistrée."
+
+msgid "Delete row"
+msgstr "Supprimer la ligne"
+
+msgid "Delete selected documents?"
+msgstr "Supprimer les documents sélectionnés ?"
+
+msgid "Delete this email template?"
+msgstr "Supprimer ce modèle d'e-mail ?"
+
+msgid "Delete this template?"
+msgstr "Supprimer ce modèle ?"
+
+msgid "Document content"
+msgstr "Contenu du document"
+
+msgid "Document not found"
+msgstr "Document introuvable"
+
 msgid "Document title"
 msgstr "Titre du document"
 
-#: inc/config.class.php:149
-msgid "You can use {owner} here."
-msgstr "Vous pouvez utiliser la balise {owner} ici."
+msgid "Don't send to user"
+msgstr "Ne pas envoyer à l'utilisateur"
 
-#: inc/config.class.php:182
+msgid "Email content"
+msgstr "Contenu de l'e-mail"
+
+msgid "Email sent"
+msgstr "E-mail envoyé"
+
+msgid "Email settings"
+msgstr "Paramètres e-mail"
+
+msgid "Email subject"
+msgstr "Objet de l'e-mail"
+
+msgid "Email template"
+msgstr "Modèle d'e-mail"
+
+msgid "Email template not found."
+msgstr "Modèle d'e-mail introuvable."
+
+msgid "Email templates"
+msgstr "Modèles d'e-mail"
+
+msgid "Enable email autosending"
+msgstr "Activer l'envoi automatique d'e-mail"
+
+msgid "Enter recipients manually"
+msgstr "Saisir les destinataires manuellement"
+
+msgid "Equipment"
+msgstr "Équipements"
+
+msgid "Equipment report"
+msgstr "Rapport d'équipements"
+
+msgid "Failed to send email"
+msgstr "Échec de l'envoi de l'e-mail"
+
+msgid "File size too large."
+msgstr "Fichier trop volumineux."
+
+msgid "Fill mandatory fields"
+msgstr "Remplissez les champs obligatoires"
+
+msgid "Font"
+msgstr "Police"
+
+msgid "Font size"
+msgstr "Taille de police"
+
+msgid "GLPI Protocols Manager mail"
+msgstr "E-mail du gestionnaire de protocoles GLPI"
+
+msgid "Generated documents"
+msgstr "Documents générés"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Invalid email address(es) skipped: "
+msgstr "Adresse(s) e-mail invalide(s) ignorée(s) : "
+
+msgid "Landscape"
+msgstr "Paysage"
+
+msgid "Logo & appearance"
+msgstr "Logo et apparence"
+
+msgid "Logo height (px)"
+msgstr "Hauteur du logo (px)"
+
+msgid "Logo width (px)"
+msgstr "Largeur du logo (px)"
+
+msgid "No recipients specified. Email not sent."
+msgstr "Aucun destinataire spécifié. E-mail non envoyé."
+
+msgid "Off"
+msgstr "Non"
+
+msgid "On"
+msgstr "Oui"
+
+msgid "Please select at least one item."
+msgstr "Veuillez sélectionner au moins un élément."
+
+msgid "Portrait"
+msgstr "Portrait"
+
+msgid "Protocols Manager"
+msgstr "Gestionnaire de protocoles"
+
+msgid "Protocols manager"
+msgstr "Gestionnaire de protocoles"
+
+msgid "Recipients (use ; to separate emails)"
+msgstr "Destinataires (utiliser ; pour séparer les e-mails)"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+msgid "Select recipients from template"
+msgstr "Sélectionner les destinataires depuis le modèle"
+
+msgid "Select recipients from template or enter manually to send email"
+msgstr "Sélectionnez les destinataires depuis le modèle ou saisissez-les manuellement pour envoyer l'e-mail"
+
+msgid "Select who should generate the pdf"
+msgstr "Sélectionner qui doit générer le PDF"
+
+msgid "Send email"
+msgstr "Envoyer l'e-mail"
+
+msgid "Send to user"
+msgstr "Envoyer à l'utilisateur"
+
+msgid "Serial and inventory number in separate columns"
+msgstr "Numéro de série et d'inventaire en colonnes séparées"
+
+msgid "Serial or inventory number (if serial is empty)"
+msgstr "Numéro de série ou d'inventaire (si le série est vide)"
+
+msgid "Subject"
+msgstr "Objet"
+
+msgid "Template"
+msgstr "Modèle"
+
+msgid "Template name"
+msgstr "Nom du modèle"
+
+msgid "Template not found."
+msgstr "Modèle introuvable."
+
+msgid "Templates settings"
+msgstr "Paramètres des modèles"
+
+msgid "The user who generates the document"
+msgstr "L'utilisateur qui génère le document"
+
+msgid "This plugin requires GLPI >= 10.0.0 and < 12.0.0"
+msgstr "Ce plugin nécessite GLPI >= 10.0.0 et < 12.0.0"
+
+msgid "Upper Content"
+msgstr "Contenu supérieur"
+
+msgid "User"
+msgstr "Utilisateur"
+
+msgid "Word breaking"
+msgstr "Coupure de mots"
+
+msgid "Wrong file type. Only JPG and PNG files are accepted."
+msgstr "Type de fichier incorrect. Seuls JPG et PNG sont acceptés."
+
+msgid "You can use {owner} here."
+msgstr "Vous pouvez utiliser {owner} ici."
+
 msgid "You can use {owner} or {admin} here."
-msgstr "Vous pouvez utiliser la balise {owner} ou {admin} ici."
+msgstr "Vous pouvez utiliser {owner} ou {admin} ici."
+
+msgid "email template"
+msgstr "modèle d'e-mail"
+
+msgid "template"
+msgstr "modèle"
+
+msgid "Plugin configuration"
+msgstr "Configuration du plugin"
+
+msgid "Protocols manager tab access"
+msgstr "Accès à l'onglet du gestionnaire de protocoles"
+
+msgid "Failed to generate document. Please try again."
+msgstr "Échec de la génération du document. Veuillez réessayer."
+
+msgid "Footer"
+msgstr "Pied de page"
+
+msgid "Date format"
+msgstr "Format de date"
+
+msgid "Numeric (DD.MM.YYYY)"
+msgstr "Numérique (JJ.MM.AAAA)"
+
+msgid "Written date — e.g. 16 de marzo de 2026"
+msgstr "Date écrite — ex. 16 mars 2026"
+
+msgid "No document selected."
+msgstr "Aucun document sélectionné."
+
+msgid "Folio"
+msgstr "Référence"
