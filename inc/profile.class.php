@@ -44,7 +44,11 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
         $edit_flag = 1; // insert by default
 
         // Load existing rights if any
-        $req = $DB->request('glpi_plugin_protocolsmanager_profiles', ['profile_id' => $profile_id]);
+        // Mise à jour de la syntaxe de $DB->request
+        $req = $DB->request([
+            'FROM' => 'glpi_plugin_protocolsmanager_profiles',
+            'WHERE' => ['profile_id' => $profile_id]
+        ]);
         if ($row = $req->current()) {
             foreach (self::$rightFields as $field => $_) {
                 $rights[$field] = $row[$field] ?? '';
@@ -52,6 +56,9 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
             $edit_flag = 0; // update mode
         }
 
+        // Note : $CFG_GLPI['root_doc'] est correct ici, mais le formulaire pointe vers un script
+        // qui devrait être dans /plugins/protocolsmanager/front/profile.form.php
+        // La documentation indique que les URL /plugins/... sont gérées.
         echo "<form name='profiles' action='{$CFG_GLPI['root_doc']}/plugins/protocolsmanager/front/profile.form.php' method='post'>";
         echo "<div class='center'>";
         echo "<table class='tab_cadre_fixehov'>";
@@ -90,7 +97,9 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
             'plugin_conf'  => $_POST['plugin_conf'] ?? '',
             'tab_access'   => $_POST['tab_access'] ?? ''
         ];
-
+        
+        // C'est correct. $DB->insert et $DB->update gèrent la protection SQL.
+        // Pas besoin de addslashes() sur les données de $_POST.
         if ((int)$_POST['edit_flag'] === 1) {
             $DB->insert('glpi_plugin_protocolsmanager_profiles', $data);
         } else {
@@ -109,9 +118,9 @@ class PluginProtocolsmanagerProfile extends CommonDBTM
 			return false;
 		}
 	
+        // Mise à jour de la syntaxe de $DB->request
 		$res = $DB->request(
-			'glpi_plugin_protocolsmanager_profiles',
-			['profile_id' => $profile_id]
+			['FROM' => 'glpi_plugin_protocolsmanager_profiles', 'WHERE' => ['profile_id' => $profile_id]]
 		);
 	
 		if ($row = $res->current()) {

@@ -2093,46 +2093,47 @@ EOT;
                     }
                 }
 
-                // PDF/A does not allow inheriting Resources, we must explicitly define them on each page
-                if ($this->pdfa) {
-                    $pagesInfo = $this->objects[$this->currentNode]['info'];
+                // Keep resources local to each page. Some PDF processors that add
+                // signature appearances replace a page's Resources dictionary and
+                // do not preserve resources inherited from the parent Pages node.
+                $pagesInfo = $this->objects[$this->currentNode]['info'];
 
-                    if ((isset($pagesInfo['fonts']) && count($pagesInfo['fonts'])) ||
-                        isset($pagesInfo['procset']) ||
-                        (isset($pagesInfo['extGStates']) && count($pagesInfo['extGStates']))
-                    ) {
-                        $res .= "\n/Resources <<";
-    
-                        if (isset($pagesInfo['procset'])) {
-                            $res .= "\n/ProcSet " . $pagesInfo['procset'] . " 0 R";
+                if ((isset($pagesInfo['fonts']) && count($pagesInfo['fonts'])) ||
+                    isset($pagesInfo['procset']) ||
+                    (isset($pagesInfo['xObjects']) && count($pagesInfo['xObjects'])) ||
+                    (isset($pagesInfo['extGStates']) && count($pagesInfo['extGStates']))
+                ) {
+                    $res .= "\n/Resources <<";
+
+                    if (isset($pagesInfo['procset'])) {
+                        $res .= "\n/ProcSet " . $pagesInfo['procset'] . " 0 R";
+                    }
+
+                    if (isset($pagesInfo['fonts']) && count($pagesInfo['fonts'])) {
+                        $res .= "\n/Font << ";
+                        foreach ($pagesInfo['fonts'] as $finfo) {
+                            $res .= "\n/F" . $finfo['fontNum'] . " " . $finfo['objNum'] . " 0 R";
                         }
-    
-                        if (isset($pagesInfo['fonts']) && count($pagesInfo['fonts'])) {
-                            $res .= "\n/Font << ";
-                            foreach ($pagesInfo['fonts'] as $finfo) {
-                                $res .= "\n/F" . $finfo['fontNum'] . " " . $finfo['objNum'] . " 0 R";
-                            }
-                            $res .= "\n>>";
-                        }
-    
-                        if (isset($pagesInfo['xObjects']) && count($pagesInfo['xObjects'])) {
-                            $res .= "\n/XObject << ";
-                            foreach ($pagesInfo['xObjects'] as $finfo) {
-                                $res .= "\n/" . $finfo['label'] . " " . $finfo['objNum'] . " 0 R";
-                            }
-                            $res .= "\n>>";
-                        }
-    
-                        if (isset($pagesInfo['extGStates']) && count($pagesInfo['extGStates'])) {
-                            $res .= "\n/ExtGState << ";
-                            foreach ($pagesInfo['extGStates'] as $gstate) {
-                                $res .= "\n/GS" . $gstate['stateNum'] . " " . $gstate['objNum'] . " 0 R";
-                            }
-                            $res .= "\n>>";
-                        }
-    
                         $res .= "\n>>";
                     }
+
+                    if (isset($pagesInfo['xObjects']) && count($pagesInfo['xObjects'])) {
+                        $res .= "\n/XObject << ";
+                        foreach ($pagesInfo['xObjects'] as $finfo) {
+                            $res .= "\n/" . $finfo['label'] . " " . $finfo['objNum'] . " 0 R";
+                        }
+                        $res .= "\n>>";
+                    }
+
+                    if (isset($pagesInfo['extGStates']) && count($pagesInfo['extGStates'])) {
+                        $res .= "\n/ExtGState << ";
+                        foreach ($pagesInfo['extGStates'] as $gstate) {
+                            $res .= "\n/GS" . $gstate['stateNum'] . " " . $gstate['objNum'] . " 0 R";
+                        }
+                        $res .= "\n>>";
+                    }
+
+                    $res .= "\n>>";
                 }
 
                 $res .= "\n>>\nendobj";

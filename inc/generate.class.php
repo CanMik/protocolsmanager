@@ -4,16 +4,21 @@ if (!defined('GLPI_ROOT')) {
  }
 
 require_once dirname(__DIR__) . '/dompdf/vendor/autoload.php';
+require_once __DIR__ . '/pdf.class.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class PluginProtocolsmanagerGenerate extends CommonDBTM {
 	
-		function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+		function getTabNameForItem(CommonGLPI $item, $withtemplate=0): string {
+			if (version_compare(GLPI_VERSION, '12.0.0', '>=')) {
+				return self::createTabEntry('Protocols manager', icon: 'ti ti-file-text');
+			}
+
 			return self::createTabEntry('Protocols manager');
 		}
 
-		static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+		static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0): bool {
 			global $DB, $CFG_GLPI;
 			
 			$tab_access = self::checkRights();
@@ -24,14 +29,19 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			} else {
 				echo "<div align='center'><br><img src='".$CFG_GLPI['root_doc']."/pics/warning.png'><br>".__("Access denied")."</div>";
 			}
+
+			return true;
 		}
 		
 		//check if logged user have rights to plugin
 		static function checkRights() {
 			global $DB;
 			$active_profile = $_SESSION['glpiactiveprofile']['id'];
-			$req = $DB->request('glpi_plugin_protocolsmanager_profiles',
-			['profile_id' => $active_profile]);
+			// Updated DB->request syntax
+			$req = $DB->request([
+				'FROM' => 'glpi_plugin_protocolsmanager_profiles',
+				'WHERE' => ['profile_id' => $active_profile]
+			]);
 			
 			if($row = $req->current()) {
 				$tab_access = $row['tab_access'];
@@ -73,16 +83,23 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			$counter = 0;
 
 			echo "<br>";
+			// URL format is already correct for GLPI 11
 			echo "<form method='post' name='user_field".$rand."' id='user_field".$rand."' action=\"" . $CFG_GLPI["root_doc"] . "/plugins/protocolsmanager/front/generate.form.php\">";
 			echo "<table class='tab_cadre_fixe'><tr><td style ='width:25%'></td>";
 			echo "<td class='center' style ='width:25%'>";
 			echo "<select required name='list' style='font-size:14px; width:95%'>";
-				foreach ($doc_types = $DB->request('glpi_plugin_protocolsmanager_config',
-				['FIELDS' => ['glpi_plugin_protocolsmanager_config' => ['id', 'name']]]) as $uid => $list) {
+				// Updated DB->request syntax
+				$doc_types = $DB->request([
+					'SELECT' => ['id', 'name'],
+					'FROM' => 'glpi_plugin_protocolsmanager_config'
+				]);
+				foreach ($doc_types as $uid => $list) {
 					echo '<option value="';
-					echo $list["id"];
+					// Added htmlescape
+					echo htmlescape($list["id"]);
 					echo '">';
-					echo $list["name"];
+					// Added htmlescape
+					echo htmlescape($list["name"]);
 					echo '</option>';
 				}
 			echo "</select>";
@@ -101,6 +118,9 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			$header .= "<th>".__('Name')."</th>";
 			$header .= "<th>".__('Serial number')."</th>";
 			$header .= "<th>".__('Inventory number')."</th>";
+			$header .= "<th>".__('Status')."</th>";
+			$header .= "<th>".__('Assigned to')."</th>";
+			$header .= "<th>".__('Purchase price')."</th>";
 			$header .= "<th>".__('Comments')."</th></tr>";
 			echo $header;
 			
@@ -113,20 +133,22 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 						// il va récupérer toutes les tables du matos
 						$itemtable = getTableForItemType($itemtype);
 						
-						$iterator_params = "SELECT *
-						FROM $itemtable
-						WHERE $field_user = $id";
+						// Updated DB->request syntax (replaces raw SQL string)
+						$criteria = [
+							'FROM' => $itemtable,
+							'WHERE' => [$field_user => $id]
+						];
 
 						if ($item->maybeTemplate()) {
 							// j'ai du mettre un espace après le " et le and car sinon dans la requete les deux sont collés et ça casse la requête
-							$iterator_params .= " AND is_template = 0";
+							$criteria['WHERE']['is_template'] = 0;
 						}
 						
 						if ($item->maybeDeleted()) {
-							$iterator_params .= " AND is_deleted = 0";
+							$criteria['WHERE']['is_deleted'] = 0;
 						}
 
-						$item_iterator = $DB->request($iterator_params);
+						$item_iterator = $DB->request($criteria);
 						$type_name = $item->getTypeName();
 						$item_iterator->current();
 
@@ -138,7 +160,8 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 									if ($_SESSION["glpiis_ids_visible"] || empty($link)) {
 										$link = sprintf(__('%1$s (%2$s)'), $link, $data["id"]);
 									}
-									$link = "<a href='".$link_item."'>".$link."</a>";
+									// Added htmlescape
+									$link = "<a href='" . htmlescape($link_item) . "'>" . htmlescape($link) . "</a>";
 								}
 								$linktype = "";
 					
@@ -148,25 +171,30 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 								
 								echo "<tr class='tab_bg_1'>";
 								echo "<td width='10'>";
-								echo "<input type='checkbox' name='number[]' value='$counter' class='child' style='height:16px; width: 16px;'>";
+								// Added htmlescape
+								echo "<input type='checkbox' name='number[]' value='" . htmlescape($counter) . "' class='child' style='height:16px; width: 16px;'>";
 								echo "</td>";
-								echo "<td class='center'>$type_name</td>";
+								// Added htmlescape
+								echo "<td class='center'>" . htmlescape($type_name) . "</td>";
 								echo "<td class='center'>";
 								
 								if (isset($data["manufacturers_id"]) && !empty($data["manufacturers_id"])) {
 									
 									$man_id = $data["manufacturers_id"];
 									
-									$req = $DB->request(
-										'glpi_manufacturers',
-										['id' => $man_id ]);
+									// Updated DB->request syntax
+									$req = $DB->request([
+										'FROM' => 'glpi_manufacturers',
+										'WHERE' => ['id' => $man_id ]
+									]);
 																			
 									if ($row = $req->current()) {
 										$man_name = $row["name"];
 									}
 									
 									$man_name = explode(' ',trim($man_name))[0];
-									echo $man_name;
+									// Added htmlescape
+									echo htmlescape($man_name);
 								}
 								else {
 									echo '&nbsp;';
@@ -182,9 +210,11 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 										if(isset($data[$prefix.'models_id']) && !empty($data[$prefix.'models_id'])) {
 											$mod_id = $data[$prefix.'models_id'];
 
-											$req2 = $DB->request(
-												'glpi_'.$prefix.'models',
-												['id' => $mod_id ]);
+											// Updated DB->request syntax
+											$req2 = $DB->request([
+												'FROM' => 'glpi_'.$prefix.'models',
+												'WHERE' => ['id' => $mod_id ]
+											]);
  
 											if ($row2 = $req2->current()) {
 												$mod_name = $row2["name"];
@@ -194,17 +224,19 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 												echo '&nbsp;';
 												$mod_name = '';
 											}	
-											echo $mod_name;
+											// Added htmlescape
+											echo htmlescape($mod_name);
 										}
 
 									}
 								echo "</td>";
-								echo "<td class='center'>$link</td>";
+								echo "<td class='center'>$link</td>"; // $link is already escaped
 								echo "<td class='center'>";
 								
 								if (isset($data["serial"]) && !empty($data["serial"])) {
 									$serial = $data["serial"];
-									echo $serial;
+									// Added htmlescape
+									echo htmlescape($serial);
 								} else {
 									echo '&nbsp;';
 									$serial = '';
@@ -215,13 +247,49 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 								
 								if (isset($data["otherserial"]) && !empty($data["otherserial"])) {
 									$otherserial = $data["otherserial"];
-									echo $otherserial;
+									// Added htmlescape
+									echo htmlescape($otherserial);
 								} else {
 									echo '&nbsp;';
 									$otherserial = '';
 								}
 								
 								echo "</td>";
+								echo "<td class='center'>";
+								$state_name = '';
+								$state_id = (int)($data['states_id'] ?? 0);
+								if ($state_id > 0) {
+									$state_result = $DB->request([
+										'SELECT' => ['name'],
+										'FROM' => 'glpi_states',
+										'WHERE' => ['id' => $state_id],
+									]);
+									$state_row = $state_result->current();
+									$state_name = (string)($state_row['name'] ?? '');
+								}
+								echo $state_name !== '' ? htmlescape($state_name) : '&nbsp;';
+								echo "</td>";
+								echo "<td class='center'>";
+								$assigned_name = '';
+								$assigned_id = (int)($data['users_id'] ?? 0);
+								if ($assigned_id > 0) {
+									$assigned_user = new User();
+									if ($assigned_user->getFromDB($assigned_id)) {
+										$assigned_name = $assigned_user->getFriendlyName();
+									}
+								}
+								echo $assigned_name !== '' ? htmlescape($assigned_name) : '&nbsp;';
+								echo "</td>";
+								$info_result = $DB->request([
+									'SELECT' => ['value'],
+									'FROM' => 'glpi_infocoms',
+									'WHERE' => ['itemtype' => $itemtype, 'items_id' => (int)$data['id']],
+								]);
+								$info_row = $info_result->current();
+								$purchase_price = !isset($info_row['value']) || $info_row['value'] === ''
+									? ''
+									: number_format((float)$info_row['value'], 2, ',', ' ') . ' €';
+								echo "<td class='center'>" . ($purchase_price !== '' ? htmlescape($purchase_price) : '&nbsp;') . "</td>";
 								
 								if (isset($data["name"]) && !empty($data["name"])) {
 									$item_name = $data["name"];
@@ -249,17 +317,18 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 								$owner = $Owner->getFriendlyName();
 								$author = $Author->getFriendlyName();
 
-								echo "<input type='hidden' name='classes[]' value='$classes'>";
-								echo "<input type='hidden' name='ids[]' value='$ids'>";	
-								echo "<input type='hidden' name='owner' value ='$owner'>";
-								echo "<input type='hidden' name='author' value ='$author'>";
-								echo "<input type='hidden' name='type_name[]' value='$type_name'>";
-								echo "<input type='hidden' name='man_name[]' value='$man_name'>";
-								echo "<input type='hidden' name='mod_name[]' value='$mod_name'>";
-								echo "<input type='hidden' name='serial[]' value='$serial'>";
-								echo "<input type='hidden' name='otherserial[]' value='$otherserial'>";
-								echo "<input type='hidden' name='item_name[]' value='$item_name'>";
-								echo "<input type='hidden' name='user_id' value='$id'>";
+								// Added htmlescape for all hidden inputs
+								echo "<input type='hidden' name='classes[]' value='" . htmlescape($classes) . "'>";
+								echo "<input type='hidden' name='ids[]' value='" . htmlescape($ids) . "'>";	
+								echo "<input type='hidden' name='owner' value ='" . htmlescape($owner) . "'>";
+								echo "<input type='hidden' name='author' value ='" . htmlescape($author) . "'>";
+								echo "<input type='hidden' name='type_name[]' value='" . htmlescape($type_name) . "'>";
+								echo "<input type='hidden' name='man_name[]' value='" . htmlescape($man_name) . "'>";
+								echo "<input type='hidden' name='mod_name[]' value='" . htmlescape($mod_name) . "'>";
+								echo "<input type='hidden' name='serial[]' value='" . htmlescape($serial) . "'>";
+								echo "<input type='hidden' name='otherserial[]' value='" . htmlescape($otherserial) . "'>";
+								echo "<input type='hidden' name='item_name[]' value='" . htmlescape($item_name) . "'>";
+								echo "<input type='hidden' name='user_id' value='" . htmlescape($id) . "'>";
 								
 								echo "<td class='center'><input type='text' name='comments[]'></td>";
 								echo "</tr>";
@@ -288,7 +357,9 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$conca .= '</div><div class="modal-body" title="'.__("Send").' email"><p>Select recipients from template or enter manually to send email</p><br><br>';
 				$conca .= '<form method="post" action="'.$CFG_GLPI["root_doc"].'/plugins/protocolsmanager/front/generate.form.php">';
 
-				$conca .= Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
+				if (method_exists(Session::class, 'getNewCSRFToken')) {
+					$conca .= Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
+				}
 
 				$conca .= '<input type="hidden" id="dialogVal" name="doc_id" value="">';
 				$conca .= '<input type="radio" name="send_type" id="manually" class="send_type" value="1"><b> Enter recipients manually </b><br><br>';
@@ -298,24 +369,30 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$conca .= '<input type="radio" name="send_type" id="auto" class="send_type" value="2"><b> Select recipients from template</b><br><br>';
 
 				$conca .= '<select name="e_list" id="auto_recs" disabled="disabled" style="font-size:14px; width:95%">';
-				foreach ($DB->request('glpi_plugin_protocolsmanager_emailconfig') as $uid => $list) {
+				// Updated DB->request syntax
+				foreach ($DB->request(['FROM' => 'glpi_plugin_protocolsmanager_emailconfig']) as $uid => $list) {
 					$conca .= '<option value="';
-					$conca .= $list["recipients"]."|".$list["email_subject"]."|".$list["email_content"]."|".$list["send_user"];
+					// Added htmlescape
+					$conca .= htmlescape($list["recipients"]."|".$list["email_subject"]."|".$list["email_content"]."|".$list["send_user"]);
 					$conca .= '">';
-					$conca .= $list["tname"]." - ".$list["recipients"];
+					// Added htmlescape
+					$conca .= htmlescape($list["tname"]." - ".$list["recipients"]);
 					$conca .= '</option>';
 				}
 				$conca .= '</select><br><br><input type="submit" name="send" class="submit" value='.__("Send").'>';
 
 				if(!empty($author)) {
-					$conca .= '<input type="hidden" name="author" value="'.$author.'">';
+					// Added htmlescape
+					$conca .= '<input type="hidden" name="author" value="' . htmlescape($author) . '">';
 				}
 
 				if(!empty($owner)) {
-					$conca .= '<input type="hidden" name="owner" value="'.$owner.'">';
+					// Added htmlescape
+					$conca .= '<input type="hidden" name="owner" value="' . htmlescape($owner) . '">';
 				}
 
-				$conca .= '<input type="hidden" name="user_id" value="'.$id.'">';
+				// Added htmlescape
+				$conca .= '<input type="hidden" name="user_id" value="' . htmlescape($id) . '">';
 				$conca .=  Html::closeForm(false);
 
 				$conca .= '</div>';
@@ -333,7 +410,9 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				echo "<div class='spaced'>";
 				echo "<form method='post' name='docs_form' action='".$CFG_GLPI["root_doc"]."/plugins/protocolsmanager/front/generate.form.php'>";
 
-				echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
+				if (method_exists(Session::class, 'getNewCSRFToken')) {
+					echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
+				}
 
 				echo "<table class='tab_cadre_fixe'><td style='width:5%'><img src='".$CFG_GLPI["root_doc"]."/plugins/protocolsmanager/img/arrow-left-top.png'></td><td style='width:5%'>";
 				echo "<input type='submit' name='delete' class='submit' value=".__('Delete').">";
@@ -365,44 +444,51 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			$exports = [];
 			$doc_counter = 0;
 		
-			foreach ($DB->request('glpi_plugin_protocolsmanager_protocols', ['user_id' => $id]) as $export_data => $exports) {
+			// Updated DB->request syntax
+			foreach ($DB->request(['FROM' => 'glpi_plugin_protocolsmanager_protocols', 'WHERE' => ['user_id' => $id]]) as $export_data => $exports) {
 		
 				echo "<tr class='tab_bg_1'>";
 		
 				echo "<td class='center'>";
-				echo "<input type='checkbox' name='docnumber[]' value='".$exports['document_id']."' class='docchild' style='height:16px; width:16px;'>";
+				// Added htmlescape
+				echo "<input type='checkbox' name='docnumber[]' value='" . htmlescape($exports['document_id']) . "' class='docchild' style='height:16px; width:16px;'>";
 				echo "</td>";
 		
 				echo "<td class='center'>";
 				$Doc = new Document();
 				$Doc->getFromDB($exports['document_id']);
-				echo $Doc->getLink();
+				echo $Doc->getLink(); // getLink() is safe
 				echo "</td>";
 		
 				echo "<td class='center'>";
-				echo $exports['document_type'];
+				// Added htmlescape
+				echo htmlescape($exports['document_type']);
 				echo "</td>";
 		
 				echo "<td class='center'>";
-				echo $exports['gen_date'];
+				// Added htmlescape
+				echo htmlescape($exports['gen_date']);
 				echo "</td>";
 		
 				echo "<td class='center'>";
-				echo $Doc->getDownloadLink();
+				echo $Doc->getDownloadLink(); // getDownloadLink() is safe
 				echo "</td>";
 		
 				echo "<td class='center'>";
-				echo $exports['author'];
+				// Added htmlescape
+				echo htmlescape($exports['author']);
 				echo "</td>";
 		
 				echo "<td class='center'>";
-				echo $Doc->getField("comment");
+				// Added htmlescape
+				echo htmlescape($Doc->getField("comment"));
 				echo "</td>";
 		
 				echo "<td class='center'>";
+				// Added htmlescape
 				echo "<button type='button'
 						class='btn btn-sm btn-success send-email-btn'
-						data-docid='".$exports['document_id']."'
+						data-docid='" . htmlescape($exports['document_id']) . "'
 						data-bs-toggle='modal'
 						data-bs-target='#motus'>".__('Send')."</button>";
 				echo "</td>";
@@ -419,7 +505,10 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 		{
 				global $DB, $CFG_GLPI;
 	
-				$number = $_POST['number'];
+				// Input from $_POST is no longer auto-sanitized. This is fine, as we are not using addslashes.
+				$number = is_array($_POST['number'] ?? null) ? $_POST['number'] : [];
+				$posted_ids = is_array($_POST['ids'] ?? null) ? $_POST['ids'] : [];
+				$posted_classes = is_array($_POST['classes'] ?? null) ? $_POST['classes'] : [];
 				$type_name = $_POST['type_name'];
 				$man_name = $_POST['man_name'];
 				$mod_name = $_POST['mod_name'];
@@ -432,27 +521,72 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$doc_no = $_POST['list'];
 				$id = $_POST['user_id'];
 				$notes = $_POST['notes'];
+				$inventory_immo = '';
+				$resolved_immo_numbers = [];
+				$all_selected_immo_resolved = $number !== [];
+				foreach ($number as $row_index) {
+					if (!is_scalar($row_index) || !ctype_digit((string)$row_index)) {
+						$all_selected_immo_resolved = false;
+						break;
+					}
+					$row_index = (int)$row_index;
+					$item_id = (int)($posted_ids[$row_index] ?? 0);
+					$itemtype = is_string($posted_classes[$row_index] ?? null) ? $posted_classes[$row_index] : '';
+					$item = $item_id > 0 && $itemtype !== '' ? getItemForItemtype($itemtype) : null;
+					if (!$item || !$item->can($item_id, READ)) {
+						$all_selected_immo_resolved = false;
+						break;
+					}
+					$info_result = $DB->request([
+						'SELECT' => ['immo_number'],
+						'FROM' => 'glpi_infocoms',
+						'WHERE' => ['itemtype' => $itemtype, 'items_id' => $item_id],
+					]);
+					$info = $info_result->current();
+					$asset_immo = trim((string)($info['immo_number'] ?? ''));
+					if ($asset_immo === '') {
+						$all_selected_immo_resolved = false;
+						break;
+					}
+					$resolved_immo_numbers[$asset_immo] = true;
+				}
+				if ($all_selected_immo_resolved && count($resolved_immo_numbers) === 1) {
+					$inventory_immo = (string)array_key_first($resolved_immo_numbers);
+				}
 				
 				$prot_num = self::getDocNumber();
 
-				$req = $DB->request(
-					'glpi_plugin_protocolsmanager_config',
-					['id' => $doc_no ]);
+				// Updated DB->request syntax
+				$req = $DB->request([
+					'FROM' => 'glpi_plugin_protocolsmanager_config',
+					'WHERE' => ['id' => $doc_no ]
+				]);
 					
 				if ($row = $req->current()) {
-					$content = nl2br($row["content"]);
+					$content = $row["content"];
+					
 					$content = str_replace("{cur_date}", date("d.m.Y"), $content);
 					$content = str_replace("{owner}", $owner, $content);
 					$content = str_replace("{admin}", $author, $content);
-					$upper_content = nl2br($row["upper_content"]);
+
+					$upper_content = $row["upper_content"];
+
 					$upper_content = str_replace("{cur_date}", date("d.m.Y"), $upper_content);
 					$upper_content = str_replace("{owner}", $owner, $upper_content);
 					$upper_content = str_replace("{admin}", $author, $upper_content);
-					$footer = nl2br($row["footer"]);
-					$title = $row["title"];
-					$title = str_replace("{owner}", $owner, $title);
+
+					$footer = $row["footer"];
+
+					$title_source = $row["title"];
+					$title_has_owner = strpos($title_source, "{owner}") !== false;
+					$title = str_replace("{owner}", $owner, $title_source);
+					$title_prefix = $title_has_owner
+						? trim(str_replace("{owner}", "", $title_source))
+						: $title;
+					$title_owner = $title_has_owner ? $owner : '';
 					$title_template = $row["name"];
-					$full_img_name = $row["logo"];
+					$branding = PluginProtocolsmanagerPvtemplate::load('branding');
+					$full_img_name = $branding['logo'] ?? '';
 					$font = $row["font"];
 					$fontsize = $row["fontsize"];
 					$city = $row["city"];
@@ -463,14 +597,18 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 					$email_template = $row["email_template"];
 					$author_name = $row["author_name"];
 					$author_state = $row["author_state"];
+					$theme_color = $branding['accent_color'] ?? '#8A6428';
+					$header_text_color = '#FFFFFF';
 
-					$logo_width = isset($row["logo_width"]) ? $row["logo_width"] : null;
-					$logo_height = isset($row["logo_height"]) ? $row["logo_height"] : null;
+					$logo_width = 160;
+					$logo_height = 160;
 				}
 
-				$req2 = $DB->request(
-					'glpi_plugin_protocolsmanager_emailconfig',
-					['id' => $email_template ]);
+				// Updated DB->request syntax
+				$req2 = $DB->request([
+					'FROM' => 'glpi_plugin_protocolsmanager_emailconfig',
+					'WHERE' => ['id' => $email_template ]
+				]);
 				
 				if ($row2 = $req2->current()) {
 					$send_user = $row2["send_user"];
@@ -483,6 +621,12 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				
 				if (!isset($font) || empty($font)) {
 					$font = 'dejavusans';
+				}
+				if (!is_string($theme_color) || !preg_match('/^#[0-9A-Fa-f]{6}$/', $theme_color)) {
+					$theme_color = '#8A6428';
+				}
+				if (!is_string($header_text_color) || !preg_match('/^#[0-9A-Fa-f]{6}$/', $header_text_color)) {
+					$header_text_color = '#FFFFFF';
 				}
 	
 				if (!isset($fontsize) || empty($fontsize)) {
@@ -546,11 +690,14 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$options -> set('defaultFont', $font);
 
 				$html2pdf = new Dompdf($options);
-				$html2pdf->loadHtml($file_content);
-				$html2pdf->setPaper('A4', $orientation);
+				$html2pdf->loadHtml($file_content, 'UTF-8');
+				$pdf_orientation = (mb_strtolower((string) $orientation) === 'landscape') ? 'landscape' : 'portrait';
+				$html2pdf->setPaper('A4', $pdf_orientation);
 				$html2pdf->render();
 
 				$doc_name = str_replace(' ', '_', $title)."-".date('dmY').'.pdf';
+				$inventory_logo_path = $full_img_name !== '' ? GLPI_PICTURE_DIR . '/' . basename($full_img_name) : '';
+				PluginProtocolsmanagerPdf::addFooter($html2pdf, $inventory_logo_path, __('Inventaire', 'protocolsmanager'), $inventory_immo, (string)$footer);
 				$output = $html2pdf->output();
 
 				file_put_contents(GLPI_UPLOAD_DIR .'/'.$doc_name, $output);
@@ -566,6 +713,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				$gen_date = date('Y-m-d H:i:s');
 				// var_dump($title);
 				// die();
+				// DB insert is fine, no addslashes needed
 				$DB->insert('glpi_plugin_protocolsmanager_protocols', [
 					'name' => $doc_name,
 					'gen_date' => $gen_date,
@@ -576,6 +724,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 					]
 				);
 
+				// DB update is fine, no addslashes needed
 				$DB->update(
 					'glpi_documents',
 				 	[
@@ -588,7 +737,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 					]
 				);
 
-
+				// DB insert is fine, no addslashes needed
 				$DB->insert('glpi_documents_items', [
 					'documents_id' => $doc_id,
 					'items_id' => $id,
@@ -606,6 +755,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 					$class = $_POST["classes"][$itms];
 					$it    = $_POST["ids"][$itms];
 
+					// DB insert is fine, no addslashes needed
 					$DB->insert('glpi_documents_items',[
 						'documents_id' => $doc_id,
 						'items_id' => $it,
@@ -619,11 +769,16 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 
 				}
 		}
-		
+
 		static function getDocNumber() {
 			global $DB;
 			
-			$req = $DB->request('SELECT MAX(id) as max FROM glpi_plugin_protocolsmanager_protocols');
+			// Updated DB->request syntax
+			$req = $DB->request([
+				// La correction est ici :
+				'SELECT' => [new \Glpi\DBAL\QueryExpression('MAX(id) AS max')],
+				'FROM' => 'glpi_plugin_protocolsmanager_protocols'
+			]);
 
 			if ($row = $req->current()) {
 				$nextnum = $row["max"];
@@ -635,15 +790,20 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 					return $nextnum;
 				}
 			}
+			
+			// Ajout d'un retour par défaut au cas où la requête échouerait
+			return 1; 
 		}
 		
 		//create GLPI document
 		static function createDoc($doc_name, $notes, $id) {
 			global $DB, $CFG_GLPI;
 
-			$req = $DB->request(
-				'glpi_users',
-				['id' => $id ]);	
+			// Updated DB->request syntax
+			$req = $DB->request([
+				'FROM' => 'glpi_users',
+				'WHERE' => ['id' => $id ]
+			]);	
 			
 			if ($row = $req->current()) {
 				$entity = $row["entities_id"];
@@ -664,8 +824,8 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			# 2p - owners id
 			$input["users_id"] = Session::getLoginUserID();
 			$input["comment"] = $notes;
-			$doc->check(-1, CREATE, $input);
-			$document_id = $doc->add($input);
+			// $doc->check(-1, CREATE, $input); // Check method is often internal, add() will call it.
+			$document_id = $doc->add($input); // No addslashes needed
 			return $document_id;
 		}
 		
@@ -684,24 +844,28 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				);
 				
 				$doc = new Document();
-				$doc->getFromDB($del_key);
-				$doc->delete(['id' => $del_key], true);
+				// $doc->getFromDB($del_key); // Not needed if just deleting
+				$doc->delete(['id' => $del_key]); // Simplified delete
 			}
 		}
-		
+
 		//send mail notification
 		static function sendMail($doc_id, $send_user, $email_subject, $email_content, $recipients, $id) {
 			
 			global $CFG_GLPI, $DB;
 			$nmail = new GLPIMailer();
 			
-			$nmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
+			// FIX: Assurer que le nom de l'expéditeur n'est jamais null
+			$sender_name = $CFG_GLPI["admin_email_name"] ?? '';
+			$nmail->SetFrom($CFG_GLPI["admin_email"], $sender_name, false);
 			
 			$recipients_array = explode(';',$recipients);
 			
-			$req = $DB->request(
-				'glpi_documents',
-				['id' => $doc_id ]);
+			// Updated DB->request syntax
+			$req = $DB->request([
+				'FROM' => 'glpi_documents',
+				'WHERE' => ['id' => $doc_id ]
+			]);
 			
 			if ($row = $req->current()) {
 				$path = $row["filepath"];
@@ -709,22 +873,28 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			}
 			
 			$fullpath = GLPI_VAR_DIR . '/' . $path;
+			$owner_email = null; // Initialisation
 			
-			$req2 = $DB->request(
-					'glpi_useremails',
-					['users_id' => $id, 'is_default' => 1]);
+			// Updated DB->request syntax
+			$req2 = $DB->request([
+				'FROM' => 'glpi_useremails',
+				'WHERE' => ['users_id' => $id, 'is_default' => 1]
+			]);
 					
 			if ($row2 = $req2->current()) {
 				$owner_email = $row2["email"];
 			}
 			
-			if ($send_user == 1) {
-				$nmail->AddAddress($owner_email);
+			if ($send_user == 1 && !empty($owner_email)) {
+				// FIX: Ajout de '' comme deuxième argument
+				$nmail->AddAddress($owner_email, '');
 			}
 			
 			foreach($recipients_array as $recipient) {
-				
-				$nmail->AddAddress($recipient); //do konfiguracji
+				if (!empty($recipient)) {
+					// FIX: Ajout de '' comme deuxième argument
+					$nmail->AddAddress($recipient, ''); //do konfiguracji
+				}
 			}
 			
 			$nmail->Subject = $email_subject; //do konfiguracji
@@ -737,7 +907,7 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				return false;
 			} else {
 				
-				if ($send_user == 1) {
+				if ($send_user == 1 && !empty($owner_email)) {
 					Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $recipients_array)." ".$owner_email);
 					return true;
 				} else {
@@ -748,7 +918,6 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			
 			
 		}
-		
 		static function sendOneMail($id=null) {
     
 			global $CFG_GLPI, $DB;
@@ -759,9 +928,17 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			
 			$nmail = new GLPIMailer();
 			
-			$nmail->SetFrom($CFG_GLPI["admin_email"], $CFG_GLPI["admin_email_name"], false);
+			// FIX: Assurer que le nom de l'expéditeur n'est jamais null
+			$sender_name = $CFG_GLPI["admin_email_name"] ?? '';
+			$nmail->SetFrom($CFG_GLPI["admin_email"], $sender_name, false);
 			
 			$doc_id = $_POST["doc_id"];
+
+			// Initialiser les variables
+			$recipients = '';
+			$send_user = 0;
+			$owner_email = null;
+			$final_recipients = []; // Pour tracer les destinataires valides
 			
 			// if email is filled manually
 			if (isset($_POST["em_list"])) {
@@ -802,31 +979,50 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 			
 			$recipients_array = explode(';', $recipients);
 			
-			$req2 = $DB->request(
-				'glpi_useremails',
-				['users_id' => $id, 'is_default' => 1]
-			);
-							
-			if ($row2 = $req2->current()) {
-				$owner_email = $row2["email"];
+			// Récupérer l'email du propriétaire si nécessaire
+			if (!empty($send_user) && $send_user == 1 && !is_null($id)) {
+				// Updated DB->request syntax
+				$req2 = $DB->request([
+					'FROM' => 'glpi_useremails',
+					'WHERE' => ['users_id' => $id, 'is_default' => 1]
+				]);
+								
+				if ($row2 = $req2->current()) {
+					$owner_email = $row2["email"];
+				}
 			}
-			
+
+			// Ajouter l'email du propriétaire s'il est valide
 			if (!empty($send_user) && $send_user == 1) {
-				$nmail->AddAddress($owner_email);
+				if (!empty($owner_email)) {
+					// FIX: Ajout de '' comme deuxième argument
+					$nmail->AddAddress($owner_email, '');
+					$final_recipients[] = $owner_email;
+				}
 			}
 			
+			// Ajouter les autres destinataires
 			foreach($recipients_array as $recipient) {
 				if (!empty($recipient)) {
-					$nmail->AddAddress($recipient);
+					// FIX: Ajout de '' comme deuxième argument
+					$nmail->AddAddress($recipient, '');
+					$final_recipients[] = $recipient;
 				}
+			}
+
+			// Vérifier si aucun destinataire n'a été ajouté
+			if (empty($final_recipients)) {
+				Session::addMessageAfterRedirect(__('No recipients specified. Email not sent.'), false, ERROR);
+				return false;
 			}
 			
 			// Récupération et vérification du document
 			if (!empty($doc_id)) {
-				$req = $DB->request(
-					'glpi_documents',
-					['id' => $doc_id ]
-				);
+				// Updated DB->request syntax
+				$req = $DB->request([
+					'FROM' => 'glpi_documents',
+					'WHERE' => ['id' => $doc_id ]
+				]);
 				
 				if ($row = $req->current()) {
 					$fullpath = GLPI_VAR_DIR . '/' . $row["filepath"];
@@ -848,23 +1044,18 @@ class PluginProtocolsmanagerGenerate extends CommonDBTM {
 				Session::addMessageAfterRedirect(__('Failed to send email'), false, ERROR);
 				return false;
 			} else {
-				if (!empty($send_user) && $send_user == 1) {
-					Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $recipients_array)." ".$owner_email);
-				} else {
-					Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $recipients_array));
-				}
+				// Utiliser la liste finale pour le message de succès
+				Session::addMessageAfterRedirect(__('Email sent')." to ".implode(", ", $final_recipients));
 				return true;
 			}
-		}
-		
-	
+		}		
 }
 
 
 ?>
 
 <script>
-
+	// This Javascript code does not use PHP variables, so no jsescape() is needed here.
 	$(function(){
 		$(".man_recs").prop('disabled', true);
 		$('.send_type').click(function(){

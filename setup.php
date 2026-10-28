@@ -5,17 +5,17 @@ function plugin_version_protocolsmanager(): array
 {
     return [
         'name'         => __('Protocols manager', 'protocolsmanager'),
-        'version'      => '1.5.7.6',
-        'author'       => 'Mikail',
+        'version'      => '2.0.0',
+        'author'       => 'Cheilmann',
         'license'      => 'GPLv3+',
-        'homepage'     => 'https://github.com/CanMik/protocolsmanager',
+        'homepage'     => 'https://github.com/Cyril6789/protocolsmanager',
         'requirements' => [
             'glpi' => [
-                'min' => '10.0.0',
-                'max' => '11.0.0'
+                'min' => '11.0.0',
+                'max' => '13.0.0'
             ],
             'php'  => [
-                'min' => '7.4'
+                'min' => '8.0'
             ]
         ]
     ];
@@ -30,11 +30,12 @@ function plugin_protocolsmanager_check_config(): bool
 // Prerequisites check
 function plugin_protocolsmanager_check_prerequisites(): bool
 {
-    if (version_compare(GLPI_VERSION, '10.0.0', '<') || version_compare(GLPI_VERSION, '11.0.0', '>')) {
+    // Maximum GLPI version is exclusive, matching the requirements above.
+    if (version_compare(GLPI_VERSION, '11.0.0', '<') || version_compare(GLPI_VERSION, '13.0.0', '>=')) {
         if (method_exists('Plugin', 'messageIncompatible')) {
-            Plugin::messageIncompatible('core', '10.0.0', '11.0.0');
+            Plugin::messageIncompatible('core', '11.0.0', '13.0.0');
         } else {
-            echo __('This plugin requires GLPI >= 10.0.0 and < 11.0.0', 'protocolsmanager');
+            echo __('This plugin requires GLPI >= 11.0.0 and < 13.0.0', 'protocolsmanager');
         }
         return false;
     }
@@ -48,6 +49,10 @@ function plugin_init_protocolsmanager(): void
 
     $PLUGIN_HOOKS['csrf_compliant']['protocolsmanager'] = true;
     $PLUGIN_HOOKS['add_css']['protocolsmanager']        = 'css/styles.css';
+    $PLUGIN_HOOKS['add_javascript']['protocolsmanager'] = [
+        'public/js/plugin-homepage.js',
+        'public/js/plugin-pv-selection.js',
+    ];
 
     // Register tabs for supported item types
     $tabTargets = [
@@ -56,6 +61,11 @@ function plugin_init_protocolsmanager(): void
     ];
     foreach ($tabTargets as $target) {
         Plugin::registerClass('PluginProtocolsmanagerGenerate', ['addtabon' => [$target]]);
+    }
+
+    // A dedicated tab keeps asset commissioning separate from user inventory PDFs.
+    foreach (['Computer', 'Monitor', 'Printer', 'Peripheral', 'Phone', 'NetworkEquipment', 'SoftwareLicense'] as $target) {
+        Plugin::registerClass('PluginProtocolsmanagerCommission', ['addtabon' => [$target]]);
     }
 
     Plugin::registerClass('PluginProtocolsmanagerProfile', ['addtabon' => ['Profile']]);

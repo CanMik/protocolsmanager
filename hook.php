@@ -6,20 +6,15 @@
 function plugin_protocolsmanager_install(): bool
 {
     global $DB;
-    $version   = plugin_version_protocolsmanager();
-    $migration = new Migration($version['version']);
+    $version    = plugin_version_protocolsmanager();
+    $migration  = new Migration($version['version']);
 
     // Helper: create table if not exists
     $createTable = function (string $name, string $schema, array $inserts = []) use ($DB) {
         if (!$DB->tableExists($name)) {
-            if (!$DB->query($schema)) {
-                Toolbox::logInFile('php-errors', "Error creating table $name: " . $DB->error() . "\n");
-                return;
-            }
+            $DB->doQuery($schema, $DB->error());
             foreach ($inserts as $insert) {
-                if (!$DB->query($insert)) {
-                    Toolbox::logInFile('php-errors', "Error inserting defaults for $name: " . $DB->error() . "\n");
-                }
+                $DB->doQuery($insert, $DB->error());
             }
         }
     };
@@ -28,14 +23,14 @@ function plugin_protocolsmanager_install(): bool
     $createTable(
         'glpi_plugin_protocolsmanager_profiles',
         "CREATE TABLE glpi_plugin_protocolsmanager_profiles (
-            id INT(11) NOT NULL AUTO_INCREMENT,
-            profile_id INT(11),
-            plugin_conf CHAR(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-            tab_access CHAR(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-            make_access CHAR(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-            delete_access CHAR(1) COLLATE utf8_unicode_ci DEFAULT NULL,
+            id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            profile_id INT(11) UNSIGNED,
+            plugin_conf CHAR(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+            tab_access CHAR(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+            make_access CHAR(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+            delete_access CHAR(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
             PRIMARY KEY (id)
-        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci",
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
         [
             sprintf(
                 "INSERT INTO glpi_plugin_protocolsmanager_profiles (profile_id, plugin_conf, tab_access, make_access, delete_access)
@@ -49,14 +44,14 @@ function plugin_protocolsmanager_install(): bool
     $createTable(
         'glpi_plugin_protocolsmanager_config',
         "CREATE TABLE glpi_plugin_protocolsmanager_config (
-            id INT(11) NOT NULL AUTO_INCREMENT,
+            id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             name VARCHAR(255),
             title VARCHAR(255),
             font VARCHAR(255),
             fontsize VARCHAR(255),
             logo VARCHAR(255),
-            logo_width INT(11) DEFAULT NULL,
-            logo_height INT(11) DEFAULT NULL,
+            logo_width INT(11) UNSIGNED DEFAULT NULL,
+            logo_height INT(11) UNSIGNED DEFAULT NULL,
             content TEXT,
             footer TEXT,
             city VARCHAR(255),
@@ -70,8 +65,10 @@ function plugin_protocolsmanager_install(): bool
             email_template INT(2),
             author_name VARCHAR(255),
             author_state INT(2),
+            theme_color VARCHAR(7) NOT NULL DEFAULT '#8A6428',
+            header_text_color VARCHAR(7) NOT NULL DEFAULT '#FFFFFF',
             PRIMARY KEY (id)
-        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci",
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
         [
             "INSERT INTO glpi_plugin_protocolsmanager_config
                 (name, title, font, fontsize, content, footer, city, serial_mode, orientation, breakword, email_mode, author_name, author_state)
@@ -112,7 +109,7 @@ function plugin_protocolsmanager_install(): bool
     $createTable(
         'glpi_plugin_protocolsmanager_emailconfig',
         "CREATE TABLE glpi_plugin_protocolsmanager_emailconfig (
-            id INT(11) NOT NULL AUTO_INCREMENT,
+            id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             tname VARCHAR(255),
             send_user INT(2),
             email_content TEXT,
@@ -120,7 +117,7 @@ function plugin_protocolsmanager_install(): bool
             email_footer VARCHAR(255),
             recipients VARCHAR(255),
             PRIMARY KEY (id)
-        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci",
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
         [
             "INSERT INTO glpi_plugin_protocolsmanager_emailconfig
                 (tname, send_user, email_content, email_subject, recipients)
@@ -133,34 +130,51 @@ function plugin_protocolsmanager_install(): bool
     $createTable(
         'glpi_plugin_protocolsmanager_protocols',
         "CREATE TABLE glpi_plugin_protocolsmanager_protocols (
-            id INT(11) NOT NULL AUTO_INCREMENT,
+            id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             name VARCHAR(255),
-            user_id INT(11),
+            user_id INT(11) UNSIGNED,
             gen_date DATETIME,
             author VARCHAR(255),
-            document_id INT(11),
+            document_id INT(11) UNSIGNED,
             document_type VARCHAR(255),
             PRIMARY KEY (id)
-        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8_unicode_ci"
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
     );
 
-    // Update config table fields if upgrading from older versions
+    // Singleton settings are intentionally separate from the unlimited inventory templates.
+    $createTable(
+        'glpi_plugin_protocolsmanager_settings',
+        "CREATE TABLE glpi_plugin_protocolsmanager_settings (
+            id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            setting_key VARCHAR(64) NOT NULL,
+            setting_value LONGTEXT NOT NULL,
+            PRIMARY KEY (id),
+            UNIQUE KEY uniq_setting_key (setting_key)
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    );
+
+    require_once __DIR__ . '/inc/pvtemplate.class.php';
+    PluginProtocolsmanagerPvtemplate::seedDefaults();
+
+    // Add missing fields on update
     $fieldsToAdd = [
         'author_name' => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD author_name VARCHAR(255) AFTER email_template",
         'author_state' => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD author_state INT(2) AFTER author_name",
         'title'        => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD title VARCHAR(255) AFTER name",
-        'logo_width'   => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD logo_width INT(11) DEFAULT NULL AFTER logo",
-        'logo_height'  => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD logo_height INT(11) DEFAULT NULL AFTER logo_width"
+        'logo_width'   => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD logo_width INT(11) UNSIGNED DEFAULT NULL AFTER logo",
+        'logo_height'  => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD logo_height INT(11) UNSIGNED DEFAULT NULL AFTER logo_width",
+        'theme_color'  => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD theme_color VARCHAR(7) NOT NULL DEFAULT '#8A6428' AFTER author_state",
+        'header_text_color' => "ALTER TABLE glpi_plugin_protocolsmanager_config ADD header_text_color VARCHAR(7) NOT NULL DEFAULT '#FFFFFF' AFTER theme_color"
     ];
+
     foreach ($fieldsToAdd as $field => $sql) {
         if (!$DB->fieldExists('glpi_plugin_protocolsmanager_config', $field)) {
-            if (!$DB->query($sql)) {
-                Toolbox::logInFile('php-errors', "Error adding field $field: " . $DB->error() . "\n");
-            }
+            $DB->doQuery($sql, $DB->error());
         }
     }
 
     $migration->executeMigration();
+
     return true;
 }
 
@@ -172,13 +186,16 @@ function plugin_protocolsmanager_uninstall(): bool
     global $DB;
     $tables = [
         'glpi_plugin_protocolsmanager_protocols',
+        'glpi_plugin_protocolsmanager_settings',
         'glpi_plugin_protocolsmanager_config',
         'glpi_plugin_protocolsmanager_profiles',
         'glpi_plugin_protocolsmanager_emailconfig'
     ];
 
     foreach ($tables as $table) {
-        $DB->query("DROP TABLE IF EXISTS `$table`");
+        if ($DB->tableExists($table)) {
+            $DB->query("DROP TABLE IF EXISTS `$table`");
+        }
     }
 
     return true;

@@ -1,0 +1,52 @@
+.text-muted 
+{
+	color: #6c757d !important;
+}
+
+.protocolsmanager-settings .nav-tabs {
+	gap: .25rem;
+	overflow-x: auto;
+	flex-wrap: nowrap;
+}
+
+.protocolsmanager-settings .nav-link {
+	white-space: nowrap;
+}
+
+.protocolsmanager-settings .card-header h3 {
+	color: inherit;
+}
+
+.protocolsmanager-settings-form .form-label {
+	font-weight: 500;
+}
+
+.protocolsmanager-settings-form fieldset legend {
+	margin-bottom: .5rem;
+}
+
+.protocolsmanager-settings-form .form-text {
+	max-width: 80ch;
+}
+
+.protocolsmanager-settings-form textarea {
+	resize: vertical;
+}
+
+.protocolsmanager-settings-form .card-header a {
+	text-decoration: none;
+}
+
+.protocolsmanager-logo-preview {
+	max-height: 100px;
+	max-width: 240px;
+}
+
+.protocolsmanager-settings-form .form-check {
+	min-height: 1.5rem;
+}
+
+.protocolsmanager-settings table td form,
+.protocolsmanager-settings table td .d-flex form {
+	margin: 0;
+}

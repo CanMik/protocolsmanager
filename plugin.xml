@@ -2,51 +2,82 @@
 	<name>Protocols Manager</name>
 	<key>protocolsmanager</key>
 	<state>stable</state> <!-- stable | unstable | beta | alpha -->
-	<logo>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/img/pdf_ico.png</logo>
+	<logo>https://raw.githubusercontent.com/Cyril6789/protocolsmanager/master/public/img/pdf_ico.png</logo>
 	<description>
 	   <short>
-		  <en>Plugin to make configurable PDF reports with selected user inventory</en>
-		  <pl>Wtyczka pozwala generować protokoly użycia sprzętu w PDF</pl>
+		  <en>GLPI plugin for configurable PDF inventory reports, commissioning certificates, and disposal certificates</en>
+		  <pl>Wtyczka GLPI do tworzenia raportów inwentaryzacyjnych oraz protokołów uruchomienia i likwidacji sprzętu w PDF</pl>
 	   </short>
 	   <long>
-		  <en><![CDATA[Plugin to make configurable PDF reports with selected user inventory. <br />
-			Features: <br />
-			    1. Making PDFs with all or selected user inventory <br />
-			    2. Saving protocols in GLPI Documents <br />
-			    3. Possibility to create different protocol templates <br />
-			    4. Templates have configurable name, font, orientation, logo image, city, content and footer <br />
-			    5. Possibility to make comments to any selected item <br />
-			    6. Showing Manufacturer (only first word to be clearly) and Model of item <br />
-			    7. Showing serial number of item or inventory number if serial number doesn't exist or Serial and Inventory in separate columns <br />
-				8. Possibility to change orientation to landscape <br />
-				9. Possibility to add additional rows <br />
-				10. Optional autosending mails with exported PDFs <br />
-				11. Possibility to make notes to export]]>
+		  <en><![CDATA[Create PDF inventory reports for user equipment and configurable asset commissioning and disposal certificates. <br />
+			Features include: <br />
+			    1. Select all or part of a user's equipment and add item comments, custom rows, and a report note. <br />
+			    2. Create and manage any number of inventory templates. <br />
+			    3. Configure dedicated commissioning and disposal forms, checklists, validators, methods, and PDF chapters. <br />
+			    4. Apply one global logo and accent color to all document types. <br />
+			    5. Store generated PDFs as GLPI Documents and link them to users, assets, or licenses. <br />
+			    6. Configure email templates and optional automatic delivery for inventory reports. <br />
+			    7. Add a repeating footer with document type, asset number, and page count.]]>
 		  </en>
-		  <pl><![CDATA[Wtyczka pozwala generowac protokoly uzycia sprzetu w PDF <br />
-		  Cechy: <br />		  
-			    1. Tworzenie PDF z całym lub wybranym wyposażeniem uzytkownika <br />
-			    2. Zapisywanie protokołów w Dokumentach GLPI <br />
-			    3. Możliwość tworzenia różnych szablonów (np. protokół zwrotu, protokół uszkodzenia itp.) <br />
-			    4. Szablony mają konfigurowalną czcionkę, orientację, nazwę, tekst w środku, stopkę, miasto. <br />
-			    5. Możliwość tworzenia komentarzy do każdego elementu <br /> 
-			    6. Wyświetlanie Marki i modelu <br />
-			    7. Wyświetlanie numeru seryjnego, a jeśli jest pusty - numeru inwentarzowego lub obydwie kolumny oddzielnie <br />
-				8. Możliwość zmiany orientacji na poziomą <br />
-				9. Możliwość dodania dodatkowych wierszy (ręcznie wpisywanych) <br />
-				10. Opcjonalne wysyłanie maili z protokołami <br />
-				11. Możliwość dodania notatek do każdego eksportu]]>
+		  <pl><![CDATA[Twórz raporty inwentaryzacyjne użytkowników oraz protokoły przekazania sprzętu do eksploatacji i jego likwidacji w formacie PDF. <br />
+		  Funkcje obejmują: <br />
+			    1. Wybór całego wyposażenia użytkownika lub poszczególnych elementów oraz komentarze i notatki. <br />
+			    2. Dowolną liczbę konfigurowalnych szablonów inwentaryzacyjnych. <br />
+			    3. Oddzielne formularze i modele PDF dla protokołów uruchomienia i likwidacji sprzętu. <br />
+			    4. Wspólne logo i kolor akcentu dla wszystkich dokumentów. <br />
+			    5. Zapisywanie dokumentów PDF w GLPI i łączenie ich z użytkownikami, sprzętem lub licencjami. <br />
+			    6. Szablony wiadomości e-mail i opcjonalną automatyczną wysyłkę raportów inwentaryzacyjnych.]]>
 			</pl>
 	   </long>
 	</description>
-	<homepage>https://github.com/mateusznitka/protocolsmanager</homepage>
-	<download>https://github.com/mateusznitka/protocolsmanager/releases</download>
-	<issues>https://github.com/mateusznitka/protocolsmanager/issues</issues>
-	<readme>https://github.com/mateusznitka/protocolsmanager/blob/master/README.md</readme>
+	<homepage>https://github.com/Cyril6789/protocolsmanager</homepage>
+	<download>https://github.com/Cyril6789/protocolsmanager/releases</download>
+	<issues>https://github.com/Cyril6789/protocolsmanager/issues</issues>
+	<readme>https://github.com/Cyril6789/protocolsmanager/blob/master/README.md</readme>
 	<authors>
-	   <author>Mateusz Nitka</author>
+	   <author>Cheilmann</author>
 	</authors>
 	<versions>
+	   <version>
+		  <num>2.0.0</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.21</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.11</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.10</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.9</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.8</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.7</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
+	   <version>
+		  <num>1.6.0.6</num>
+		  <compatibility>12.0</compatibility>
+		  <compatibility>11.0</compatibility>
+	   </version>
 	   <version>
 		  <num>1.4</num>
 		  <compatibility>9.5</compatibility>
@@ -65,19 +96,16 @@
 		  <tag>export</tag>
 		  <tag>useritems</tag>
 		  <tag>inventory</tag>
+		  <tag>commissioning</tag>
+		  <tag>disposal</tag>
 	   </en>
 	   <pl>
 		  <tag>pdf</tag>
 		  <tag>export</tag>
 		  <tag>useritems</tag>
 		  <tag>inventory</tag>
+		  <tag>commissioning</tag>
+		  <tag>disposal</tag>
 	   </pl>
 	</tags>
-	<screenshots>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr5.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr4.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr2.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr3.png</screenshot>
-		<screenshot>https://raw.githubusercontent.com/mateusznitka/protocolsmanager/master/screenshots/scr1.png</screenshot>
-	</screenshots>
 </root>

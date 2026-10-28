@@ -1,3 +1,11 @@
+<?php
+$theme_color = isset($theme_color) && is_string($theme_color) && preg_match('/^#[0-9A-Fa-f]{6}$/', $theme_color)
+    ? $theme_color
+    : '#8A6428';
+$header_text_color = isset($header_text_color) && is_string($header_text_color) && preg_match('/^#[0-9A-Fa-f]{6}$/', $header_text_color)
+    ? $header_text_color
+    : '#FFFFFF';
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,14 +14,45 @@
         body {
             font-size: <?= htmlspecialchars($fontsize) ?>;
         }
-        footer {
-            position: fixed;
-            bottom: -10px;
-            left: 0; right: 0;
-            height: 50px;
+        #document-header {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        #document-header td {
+            vertical-align: bottom;
+            padding: 0 3px 2mm;
+        }
+        #document-number, #document-date {
+            border-bottom: 1px solid <?= $theme_color ?>;
+            height: 8mm;
+        }
+        #document-number { width: 34%; text-align: left; }
+        #document-logo { width: 32%; text-align: center; }
+        #document-date { width: 34%; text-align: right; }
+        #document-logo img {
+            max-width: 100%;
+            max-height: 42mm;
+            height: auto;
+            width: auto;
+        }
+        #document-title {
+            width: 100%;
+            margin-top: 5mm;
             text-align: center;
-            font-size: 8pt;
-            color: gray;
+            font-size: 15pt;
+        }
+        #title-prefix { color: #111; font-weight: bold; }
+        #title-owner {
+            margin-top: 1mm;
+            color: <?= $theme_color ?>;
+            font-size: 14pt;
+            font-weight: bold;
+        }
+        #title-owner-rule {
+            width: 25mm;
+            margin: 2mm auto 0;
+            border-top: 1px solid <?= $theme_color ?>;
         }
         #items {
             border: 0.5px solid black;
@@ -25,6 +64,33 @@
             border: 0.5px solid black;
             padding: 2px;
         }
+        #items th {
+            background-color: <?= $theme_color ?>;
+            color: <?= $header_text_color ?>;
+            font-weight: bold;
+        }
+        #signatures {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+        #signatures td { vertical-align: top; }
+        #signatures .signature-block {
+            width: 46%;
+            padding: 0;
+            border: 1px solid <?= $theme_color ?>;
+        }
+        #signatures .signature-gap { width: 8%; padding: 0; }
+        .signature-heading {
+            padding: 4px;
+            background-color: <?= $theme_color ?>;
+            color: <?= $header_text_color ?>;
+            font-weight: bold;
+        }
+        .signature-body {
+            height: 20mm;
+            padding: 4px;
+        }
         <?php if ($breakword == 1): ?>
         #items td {
             word-wrap: break-word;
@@ -34,47 +100,55 @@
 </head>
 <body>
 
-<?php if ($islogo == 1 && file_exists($logo)): 
-    $img_type = pathinfo($logo, PATHINFO_EXTENSION);
+<?php
+$logo_html = '';
+if ($islogo == 1 && file_exists($logo)):
+    $img_type = strtolower(pathinfo($logo, PATHINFO_EXTENSION));
+    // Use the standard media type for JPEG files.
+    if ($img_type === 'jpg') {
+        $img_type = 'jpeg';
+    }
     $img_data = file_get_contents($logo);
     $base64 = 'data:image/' . $img_type . ';base64,' . base64_encode($img_data);
 
     // Valeurs par défaut si non fournies
-    $max_width = !empty($logo_width) ? intval($logo_width) : 200;
-    $max_height = !empty($logo_height) ? intval($logo_height) : 200;
+    $max_width = !empty($logo_width) ? intval($logo_width) : 160;
+    $max_height = !empty($logo_height) ? intval($logo_height) : 160;
 
     // Style avec maintien du ratio
     $style = "max-width: {$max_width}px; max-height: {$max_height}px; height: auto; width: auto; object-fit: contain; display: block; margin: 0 auto;";
+    $logo_html = '<img src="' . $base64 . '" alt="Logo" style="' . $style . '" />';
 ?>
-    <div style="text-align: center;">
-        <img src="<?= $base64 ?>" alt="Logo" style="<?= $style ?>" />
-    </div>
 <?php endif; ?>
 
-<table style="width: 100%; border: none;">
+<table id="document-header">
     <tr>
-        <td style="height: 8mm; width: 70%;"><?= htmlspecialchars($prot_num) . '-' . date('dmY') ?></td>
-        <td style="height: 8mm; width: 30%; text-align: right;"><?= htmlspecialchars($city) . ' ' . date('d.m.Y') ?></td>
+        <td id="document-number"><?= htmlspecialchars($prot_num) . '-' . date('dmY') ?></td>
+        <td id="document-logo"><?= $logo_html ?></td>
+        <td id="document-date"><?= htmlspecialchars($city) . ' ' . date('d.m.Y') ?></td>
     </tr>
 </table>
 
-<table style="width: 100%; border: none;">
-    <tr>
-        <td style="text-align: center; font-size: 15pt; height: 15mm;"><?= htmlspecialchars($title) ?></td>
-    </tr>
-</table>
+<div id="document-title">
+    <div id="title-prefix"><?= htmlspecialchars($title_prefix) ?></div>
+    <?php if ($title_owner !== ''): ?>
+        <div id="title-owner"><?= htmlspecialchars($title_owner) ?></div>
+        <div id="title-owner-rule"></div>
+    <?php endif; ?>
+</div>
 
 <br>
 
 <table>
     <tr>
-        <td><?= $upper_content ?></td>
+        <td><?= nl2br(htmlspecialchars($upper_content)) // Sécurisé + nl2br pour les sauts de ligne ?></td>
     </tr>
 </table>
 
 <br>
 
 <table id="items" cellspacing="0" cellpadding="0">
+    <thead>
     <tr>
         <th></th>
         <th><?= __('Type') ?></th>
@@ -91,45 +165,48 @@
             <th><?= __('Comments') ?></th>
         <?php endif; ?>
     </tr>
+    </thead>
+    <tbody>
 
 <?php 
 $lp = 1;
 
 if (!empty($number)) {
     foreach ($number as $key) {
-        echo '<tr><td>' . $lp++ . '</td>';
+        $row_background = ($lp % 2 === 0) ? '#e8e8e8' : '#fff';
+        echo '<tr style="background-color: ' . $row_background . '"><td>' . $lp++ . '</td>';
 
         // Type
-        echo '<td>' . ($type_name[$key] ?? '') . '</td>';
+        echo '<td>' . htmlspecialchars($type_name[$key] ?? '') . '</td>';
 
         // Manufacturer and Model
         if (!empty($man_name[$key])) {
-            echo '<td>' . $man_name[$key] . '</td>';
-            echo '<td>' . ($mod_name[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($man_name[$key]) . '</td>';
+            echo '<td>' . htmlspecialchars($mod_name[$key] ?? '') . '</td>';
         } else {
             echo '<td></td>';
-            echo '<td>' . ($mod_name[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($mod_name[$key] ?? '') . '</td>';
         }
 
         // Name
-        echo '<td>' . ($item_name[$key] ?? '') . '</td>';
+        echo '<td>' . htmlspecialchars($item_name[$key] ?? '') . '</td>';
 
         // Serial / Inventory
         if ($serial_mode == 1) {
-            echo '<td>' . ($serial[$key] ?? '') . '</td>';
-            echo '<td>' . ($otherserial[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($serial[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($otherserial[$key] ?? '') . '</td>';
         } else {
             // serial_mode == 2
             $serial_value = $serial[$key] ?? '';
             if (empty($serial_value)) {
                 $serial_value = $otherserial[$key] ?? '';
             }
-            echo '<td>' . $serial_value . '</td>';
+            echo '<td>' . htmlspecialchars($serial_value) . '</td>';
         }
 
         // Comments if any
         if (!empty(array_filter($comments))) {
-            echo '<td>' . ($comments[$key] ?? '') . '</td>';
+            echo '<td>' . htmlspecialchars($comments[$key] ?? '') . '</td>';
         }
 
         echo '</tr>';
@@ -137,6 +214,7 @@ if (!empty($number)) {
     }
 }
 ?>
+    </tbody>
 </table>
 
 <br>
@@ -146,29 +224,28 @@ if (!empty($number)) {
 </table>
 
 <table>
-    <tr><td><?= $content ?></td></tr>
+    <tr><td><?= nl2br(htmlspecialchars($content)) // Sécurisé + nl2br pour les sauts de ligne ?></td></tr>
 </table>
 
 <table>
     <tr><td style="height: 20mm;"></td></tr>
 </table>
 
-<table style="width: 100%; border-collapse: collapse;">
+<table id="signatures">
     <tr>
-        <td style="width:50%; border-bottom: 1px solid black;"><strong><?= __('Administrator') ?>:</strong></td>
-        <td style="width:50%; border-bottom: 1px solid black;"><strong><?= __('User') ?>:</strong></td>
-    </tr>
-    <tr>
-        <td style="width:50%; border: 1px solid black; vertical-align: top; height: 20mm;">
-            <?= ($author_state == 2) ? $author_name : $author ?>
+        <td class="signature-block">
+            <div class="signature-heading"><?= __('Administrator') ?>:</div>
+            <div class="signature-body">
+                <?= ($author_state == 2) ? htmlspecialchars($author_name) : htmlspecialchars($author) ?>
+            </div>
         </td>
-        <td style="width:50%; border: 1px solid black; vertical-align: top; height: 20mm;">
-            <?= $owner ?>
+        <td class="signature-gap"></td>
+        <td class="signature-block">
+            <div class="signature-heading"><?= __('User') ?>:</div>
+            <div class="signature-body"><?= htmlspecialchars($owner) ?></div>
         </td>
     </tr>
 </table>
-
-<footer><?= $footer ?></footer>
 
 </body>
 </html>
