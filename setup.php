@@ -67,6 +67,9 @@ function plugin_init_protocolsmanager(): void
     foreach (['Computer', 'Monitor', 'Printer', 'Peripheral', 'Phone', 'NetworkEquipment', 'SoftwareLicense'] as $target) {
         Plugin::registerClass('PluginProtocolsmanagerCommission', ['addtabon' => [$target]]);
     }
+    // Custom asset classes are generated dynamically by GLPI, so they are only
+    // available once all plugins and custom object definitions are initialized.
+    $PLUGIN_HOOKS['post_init']['protocolsmanager'] = 'plugin_protocolsmanager_register_custom_asset_tabs';
 
     Plugin::registerClass('PluginProtocolsmanagerProfile', ['addtabon' => ['Profile']]);
     Plugin::registerClass('PluginProtocolsmanagerConfig',  ['addtabon' => ['Config']]);
@@ -80,5 +83,38 @@ function plugin_init_protocolsmanager(): void
             $PLUGIN_HOOKS['menu_toadd']['protocolsmanager']  = ['config' => 'PluginProtocolsmanagerMenu'];
             $PLUGIN_HOOKS['config_page']['protocolsmanager'] = 'front/config.form.php';
         }
+    }
+}
+
+/** Register the commissioning tab on every active GLPI custom asset type. */
+function plugin_protocolsmanager_register_custom_asset_tabs(): void
+{
+    global $DB;
+
+    if (!class_exists(\Glpi\Asset\AssetDefinitionManager::class)) {
+        return;
+    }
+
+    $manager = \Glpi\Asset\AssetDefinitionManager::getInstance();
+    $definitions = $manager->getDefinitions(true);
+
+    // GLPI 11 initializes plugins just before it boots custom asset definitions.
+    // Read definitions directly here so the tabs are registered in this request.
+    if ($definitions === [] && isset($DB)) {
+        $definition_class = \Glpi\Asset\AssetDefinition::class;
+        $table = $definition_class::getTable();
+        if ($DB->tableExists($table)) {
+            foreach ($DB->request(['FROM' => $table, 'WHERE' => ['is_active' => 1]]) as $row) {
+                $definition = new $definition_class();
+                $definition->getFromResultSet($row);
+                $definitions[] = $definition;
+            }
+        }
+    }
+
+    foreach ($definitions as $definition) {
+        Plugin::registerClass('PluginProtocolsmanagerCommission', [
+            'addtabon' => [$definition->getAssetClassName()],
+        ]);
     }
 }

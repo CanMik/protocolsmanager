@@ -496,16 +496,30 @@ class PluginProtocolsmanagerCommission extends CommonDBTM
 			'Phone' => ['phonemodels_id', 'glpi_phonemodels'],
 			'NetworkEquipment' => ['networkequipmentmodels_id', 'glpi_networkequipmentmodels'],
 		];
-		if (!isset($model_fields[$itemtype])) {
-			return '';
+		if (isset($model_fields[$itemtype])) {
+			[$model_field, $model_table] = $model_fields[$itemtype];
+		} else {
+			$asset_class = '\\Glpi\\Asset\\Asset';
+			if (!class_exists($asset_class) || !is_subclass_of($itemtype, $asset_class)
+				|| !method_exists($itemtype, 'getDefinition')) {
+				return '';
+			}
+
+			try {
+				$model_class = $itemtype::getDefinition()->getAssetModelClassName();
+				$model_field = $model_class::getForeignKeyField();
+				$model_table = $model_class::getTable();
+			} catch (Throwable $exception) {
+				return '';
+			}
 		}
-		[$model_field, $model_table] = $model_fields[$itemtype];
+
 		$model_id = (int)($fields[$model_field] ?? 0);
 		if ($model_id <= 0) {
 			return '';
 		}
 		$picture_fields = [];
-		foreach (['picture_front', 'pictures', 'picture'] as $field) {
+		foreach (['picture_front', 'picture_rear', 'pictures', 'picture'] as $field) {
 			if ($DB->fieldExists($model_table, $field)) {
 				$picture_fields[] = $field;
 			}
@@ -520,7 +534,7 @@ class PluginProtocolsmanagerCommission extends CommonDBTM
 		]);
 		$model = $result->current();
 		$candidates = [];
-		foreach (['picture_front', 'picture'] as $field) {
+		foreach (['picture_front', 'picture', 'picture_rear'] as $field) {
 			if (!empty($model[$field])) {
 				$candidates[] = (string)$model[$field];
 			}
@@ -581,14 +595,61 @@ class PluginProtocolsmanagerCommission extends CommonDBTM
 
 	private static function isSupportedSourceItemType(string $itemtype): bool
 	{
-		return in_array($itemtype, self::ITEM_TYPES, true) || $itemtype === self::LICENSE_ITEMTYPE;
+		if (in_array($itemtype, self::ITEM_TYPES, true) || $itemtype === self::LICENSE_ITEMTYPE) {
+			return true;
+		}
+
+		return in_array($itemtype, self::getCustomAssetItemTypes(), true);
+	}
+
+	/** @return string[] */
+	private static function getCustomAssetItemTypes(): array
+	{
+		$manager_class = '\\Glpi\\Asset\\AssetDefinitionManager';
+		if (!class_exists($manager_class)) {
+			return [];
+		}
+
+		$classes = [];
+		foreach ($manager_class::getInstance()->getDefinitions(true) as $definition) {
+			$classes[] = $definition->getAssetClassName();
+		}
+
+		return $classes;
+	}
+
+	/** @return string[] */
+	private static function getSupportedAssetItemTypes(): array
+	{
+		return array_values(array_unique(array_merge(self::ITEM_TYPES, self::getCustomAssetItemTypes())));
+	}
+
+	/** @return array{0: string, 1: int}|null */
+	private static function parseAssetToken(mixed $token): ?array
+	{
+		if (!is_string($token)) {
+			return null;
+		}
+
+		$separator = strrpos($token, ':');
+		if ($separator === false) {
+			return null;
+		}
+
+		$itemtype = substr($token, 0, $separator);
+		$id = substr($token, $separator + 1);
+		if ($itemtype === '' || $id === '' || !ctype_digit($id)) {
+			return null;
+		}
+
+		return [$itemtype, (int)$id];
 	}
 
 	private static function findAssetGroup(string $immo_number): ?array
 	{
 		global $DB;
 		$group = [];
-		foreach (self::ITEM_TYPES as $itemtype) {
+		foreach (self::getSupportedAssetItemTypes() as $itemtype) {
 			$rows = $DB->request([
 				'FROM' => 'glpi_infocoms',
 				'WHERE' => ['itemtype' => $itemtype, 'immo_number' => $immo_number],
@@ -684,10 +745,12 @@ class PluginProtocolsmanagerCommission extends CommonDBTM
 		}
 		$assets = [];
 		foreach ($tokens as $token) {
-			if (!is_string($token) || !preg_match('/^([A-Za-z][A-Za-z0-9]*)\:(\d+)$/', $token, $matches)) {
+			$parsed_token = self::parseAssetToken($token);
+			if ($parsed_token === null) {
 				continue;
 			}
-			$asset = self::loadAsset($matches[1], (int)$matches[2]);
+			[$itemtype, $item_id] = $parsed_token;
+			$asset = self::loadAsset($itemtype, $item_id);
 			if (!$asset || $asset['immo_number'] === '' || $asset['immo_number'] !== $immo) {
 				Session::addMessageAfterRedirect(__('Les matériels sélectionnés doivent être lisibles et porter le même numéro immo.', 'protocolsmanager'), false, ERROR);
 				return false;
@@ -760,10 +823,12 @@ class PluginProtocolsmanagerCommission extends CommonDBTM
 		}
 		$assets = [];
 		foreach ($tokens as $token) {
-			if (!is_string($token) || !preg_match('/^([A-Za-z][A-Za-z0-9]*)\:(\d+)$/', $token, $matches)) {
+			$parsed_token = self::parseAssetToken($token);
+			if ($parsed_token === null) {
 				continue;
 			}
-			$asset = self::loadAsset($matches[1], (int)$matches[2]);
+			[$itemtype, $item_id] = $parsed_token;
+			$asset = self::loadAsset($itemtype, $item_id);
 			if (!$asset || $asset['immo_number'] === '' || $asset['immo_number'] !== $immo) {
 				Session::addMessageAfterRedirect(__('Les éléments sélectionnés doivent être lisibles et porter le même numéro immo.', 'protocolsmanager'), false, ERROR);
 				return false;
